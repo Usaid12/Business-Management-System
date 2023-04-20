@@ -1,16 +1,19 @@
-import { Pool } from 'pg';
-import Cursor from 'pg-cursor';
-import { CompiledQuery, Kysely, PostgresDialect } from 'kysely';
+import { Pool } from 'pg'
+// or `import * as Cursor from 'pg-cursor'` depending on your tsconfig
+import Cursor from 'pg-cursor'
+import { DatabaseConnection, Kysely, PostgresDialect  } from 'kysely'
+import { Database } from './interfaces/Database'
 
-export const db = new Kysely<Database>({
-  dialect: new PostgresDialect({
-    pool: new Pool({
-      host: 'localhost',
-      database: 'kysely_test',
-    }),
-    cursor: Cursor,
-    onCreateConnection(connection) {
-      connection.executeQuery(CompiledQuery.raw('SELECT 1 + 1'));
-    },
-  }),
-})
+
+
+const db = new Kysely<Database>({
+  dialect : new PostgresDialect({
+    pool : new Pool({
+      host : 'localhost',
+      database : 'kysely_test'
+    })
+  })
+}) 
+
+
+

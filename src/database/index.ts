@@ -10,7 +10,10 @@ const db = new Kysely<Database>({
   dialect : new PostgresDialect({
     pool : new Pool({
       host : 'localhost',
-      database : 'kysely_test'
+      database : 'business-management-db',
+      user : 'postgres',
+      password : 'postgres',
+      port : 5432
     })
   })
 }) 

@@ -9,10 +9,10 @@ import { Database } from './interfaces/Database'
 const db = new Kysely<Database>({
   dialect : new PostgresDialect({
     pool : new Pool({
-      host : 'localhost',
+      host : 'business-management-db.cbsjx2xbocfb.eu-north-1.rds.amazonaws.com',
       database : 'business-management-db',
       user : 'postgres',
-      password : 'postgres',
+      password : 'postgres1234',
       port : 5432
     })
   })

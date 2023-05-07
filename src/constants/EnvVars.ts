@@ -1,9 +1,3 @@
-/**
- * Environments variables declared here.
- */
-
-/* eslint-disable node/no-process-env */
-
 
 export default {
   NodeEnv: (process.env.NODE_ENV ?? ''),
@@ -25,4 +19,11 @@ export default {
     Secret: (process.env.JWT_SECRET ??  ''),
     Exp: (process.env.COOKIE_EXP ?? ''), // exp at the same time as the cookie
   },
+  Database: {
+    Host: process.env.DB_HOST,
+    Port: parseInt(process.env.DB_PORT || '5432'),
+    User: process.env.DB_USER,
+    Password: process.env.DB_PASSWORD,
+    Name: process.env.DB_NAME,
+  }
 } as const;

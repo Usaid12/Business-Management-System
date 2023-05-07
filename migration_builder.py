@@ -1,7 +1,8 @@
-with open('migration_no.txt','r') as hd:
-    num = int(hd.read())
-file = open(f'./src/database/migrations/migration_no_{num}.ts' , 'w') 
-num += 1
+import datetime
+
+time1 = str(datetime.datetime.utcnow())
+utctime = time1.replace(':' , '_')
+
+
+file = open(f'./src/database/migrations/migration_at_{utctime}.ts' , 'w') 
 file.close()
-with open('migration_no.txt' ,'w') as hd:
-    hd.write(str(num))

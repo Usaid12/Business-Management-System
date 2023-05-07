@@ -12,7 +12,7 @@ const db = new Kysely<Database>({
       host : 'business-management-db.cbsjx2xbocfb.eu-north-1.rds.amazonaws.com',
       database : 'business-management-db',
       user : 'postgres',
-      password : 'postgres1234',
+      password : 'postgres123',
       port : 5432
     })
   })

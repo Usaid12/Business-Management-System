@@ -47,6 +47,7 @@ if (EnvVars.NodeEnv === NodeEnvs.Production) {
 app.use(Paths.Base, BaseRouter);
 
 // Add error handler
+// Error middleware
 app.use((
   err: Error,
   _: Request,
@@ -61,7 +62,7 @@ app.use((
   if (err instanceof RouteError) {
     status = err.status;
   }
-  return res.status(status).json({ error: err.message });
+  return res.status(status).json({ error: err.message, statusCode: status });
 });
 
 

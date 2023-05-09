@@ -1,41 +1,66 @@
 import { NextFunction, Request, Response } from 'express';
 import db from '@src/database';
 import { RouteError } from '@src/other/classes';
-import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import { RegisterPayload } from '@src/validators/auth.validator';
 import * as Bcrypt from 'bcryptjs';
+import { Role } from '@src/entities/role.entity';
+import { User } from '@src/entities/user.entity';
+import HttpStatusCodes from '@src/constants/HttpStatusCodes';
+import { plainToInstance } from 'class-transformer';
 export const register = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const data = req.body as RegisterPayload;
-    const role = await db
-      .selectFrom('roles')
-      .select(['id', 'name'])
-      .where('name', '=', data.role)
-      .execute();
-    const userExists = await db.selectFrom('users').selectAll().where('email', '=', data.email).executeTakeFirst();
+    const { role, ...data } = req.body as RegisterPayload;
+    const role_data = await Role
+      .createQueryBuilder('r')
+      .select([
+        'r.id as id',
+        'r.name as name',
+      ])
+      .where('r.name = :role', { role: role })
+      .getRawOne<Pick<Role, 'id' | 'name'>>();
+    const user_exists = await User
+      .createQueryBuilder('u')
+      .select(['u.id as id'])
+      .where('u.email = :email', { email: data.email })
+      .getRawOne<{ id: number }>();
 
-    if (userExists) {
+    if (!role_data) {
+      throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Role doesn\'t exists');
+    }
+
+    if (user_exists) {
       throw new RouteError(HttpStatusCodes.CONFLICT, 'User already exists');
     }
-    if (!role || role.length === 0) {
-      throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Role not found');
-    }
     data.password = await Bcrypt.hash(data.password, 10);
-    await db.insertInto('users')
-      .values({ 
-        email: data.email,
-        first_name: data.first_name, 
-        last_name: data.last_name, 
-        gender: data.gender, 
-        password: data.password, 
-        role_id: role[0].id, 
-        phone_number: data.phone_number,
-      })
+
+    const user_entity = plainToInstance(User, { ...data, roleId: role_data.id });
+
+    const user = await User.createQueryBuilder()
+      .insert()
+      .values(user_entity)
+      .into(User)
+      .returning([
+        'id',
+        'email',
+        'firstName',
+        'lastName',
+        'phoneNumber',
+        'gender',
+        'createdAt',
+        'deletedAt',
+        'updatedAt',
+      ])
       .execute();
+    
+    res.status(HttpStatusCodes.CREATED).json({
+      data: user.raw[0] as User,
+      statusCode: HttpStatusCodes.CREATED,
+      message: 'User registered successfully',
+    })
   } catch (error) {
     next(error);
   }

@@ -1,11 +1,11 @@
+import '../pre-start';
 
 export default {
-  NodeEnv: (process.env.NODE_ENV ?? ''),
+  NodeEnv: process.env.NODE_ENV ?? 'dev',
   Port: (process.env.PORT ?? 0),
   CookieProps: {
     Key: 'ExpressGeneratorTs',
     Secret: (process.env.COOKIE_SECRET ?? ''),
-    // Casing to match express cookie options
     Options: {
       httpOnly: true,
       signed: true,
@@ -16,7 +16,7 @@ export default {
     },
   },
   Jwt: {
-    Secret: (process.env.JWT_SECRET ??  ''),
+    Secret: (process.env.JWT_SECRET ?? ''),
     Exp: (process.env.COOKIE_EXP ?? ''), // exp at the same time as the cookie
   },
   Database: {

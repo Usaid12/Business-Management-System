@@ -1,45 +1,21 @@
-import { Pool } from 'pg';
-import { 
-  FileMigrationProvider, 
-  Kysely,
-  Migrator, 
-  PostgresDialect 
-} from 'kysely';
-import { Database } from './interfaces/Database';
 import EnvVars from '../constants/EnvVars';
-import logger from 'jet-logger';
 import path from 'path';
-import fs from 'fs/promises';
 import '../pre-start';
+import { DataSource } from 'typeorm';
 
-const db = new Kysely<Database>({
-  dialect : new PostgresDialect({
-    pool : new Pool({
-      host : EnvVars.Database.Host,
-      database : EnvVars.Database.Name,
-      user : EnvVars.Database.User,
-      password : EnvVars.Database.Password,
-      port : EnvVars.Database.Port,
-    }),
-    onCreateConnection(connection) {
-      logger.info(connection, true);
-      logger.info('Database Connected Succesfully!');
-      return Promise.resolve();
-    },
-  }),
-}); 
-
-
-export const migrator = new Migrator({
-  db,
-  provider: new FileMigrationProvider({
-    migrationFolder: path.resolve(__dirname, './migrations'),
-    fs,
-    path,
-  }),
-  migrationTableName: 'migration_metadata',
+const db = new DataSource({
+  type: 'postgres',
+  host: EnvVars.Database.Host,
+  database: EnvVars.Database.Name,
+  username: EnvVars.Database.User,
+  password: EnvVars.Database.Password,
+  port: EnvVars.Database.Port,
+  synchronize: true,
+  logging: true,
+  entities: [path.resolve(__dirname, '../entities/*.entity{.ts,.js}')],
+  migrations: [path.resolve(__dirname, '../migrations')],
+  logger: 'debug',
+  subscribers: [],
 });
 
 export default db;
-
-

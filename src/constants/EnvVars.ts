@@ -16,8 +16,10 @@ export default {
     },
   },
   Jwt: {
-    Secret: (process.env.JWT_SECRET ?? ''),
-    Exp: (process.env.COOKIE_EXP ?? ''), // exp at the same time as the cookie
+    ACCESS: {
+      SECRET: process.env.JWT_ACCESS_TOKEN_SECRET ?? '',
+      EXPIRE: process.env.JWT_ACCESS_TOKEN_EXPIRE ?? '',
+    },
   },
   Database: {
     Host: process.env.DB_HOST,

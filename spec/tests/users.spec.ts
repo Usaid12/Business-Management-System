@@ -7,7 +7,7 @@ import app from '@src/server';
 import UserRepo from '@src/repos/UserRepo';
 import User from '@src/models/User';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import { USER_NOT_FOUND_ERR } from '@src/services/UserService';
+import { USER_NOT_FOUND_ERR } from '@src/services/user.service';
 import FullPaths from '@src/routes/constants/FullPaths';
 
 import { TReqBody } from 'spec/support/types';

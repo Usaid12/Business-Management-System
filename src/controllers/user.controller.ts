@@ -1,4 +1,3 @@
-import { IUser } from "@src/models/User";
 import { IRes, IReq } from "@src/routes/types/express/misc";
 
 export async function getAll(req: IReq, res: IRes) {
@@ -6,13 +5,13 @@ export async function getAll(req: IReq, res: IRes) {
   // return res.status(HttpStatusCodes.OK).json({ users });
 }
 
-export async function add(req: IReq<{ user: IUser }>, res: IRes) {
+export async function add(req: IReq, res: IRes) {
   // const { user } = req.body;
   // await UserService.addOne(user);
   // return res.status(HttpStatusCodes.CREATED).end();
 }
 
-export async function update(req: IReq<{ user: IUser }>, res: IRes) {
+export async function update(req: IReq, res: IRes) {
   // const { user } = req.body;
   // await UserService.updateOne(user);
   // return res.status(HttpStatusCodes.OK).end();

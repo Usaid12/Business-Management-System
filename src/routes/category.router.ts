@@ -4,6 +4,7 @@ import * as CategoryController from '@src/controllers/category.controller'
 import * as CategoryValidator from '@src/validators/category.validator'
 
 import { validate } from '@src/middlewares/validate';
+import { auth } from '@src/middlewares/auth';
 
 router.post(
   '/',
@@ -13,12 +14,13 @@ router.post(
 
 router.get(
   '/',
+  auth,
   CategoryController.getCategories,
-)
-
+);
 
 router.get(
   '/:id',
+  auth,
   CategoryController.getCategoryById,
 )
 

@@ -2,7 +2,7 @@ import { Gender } from '@src/constants/enum';
 import { BaseEntity } from '@src/util/BaseEntity';
 import { Entity, Column, ManyToOne, JoinColumn, OneToOne, OneToMany } from 'typeorm';
 import { Role } from './role.entity';
-import { Shop } from './shop.entity';
+import { Shop } from './business.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -25,7 +25,7 @@ export class User extends BaseEntity {
 	public password: string;
 
 	@Column({ name: 'role_id', type: 'integer' })
-	public roleId: string;
+	public roleId: number;
 
 	@ManyToOne(() => Role, (role: Role) => role.users)
 	@JoinColumn({ name: 'role_id', foreignKeyConstraintName: 'user_role_fk' })

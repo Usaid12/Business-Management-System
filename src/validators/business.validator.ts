@@ -3,5 +3,5 @@ import { register } from './auth.validator';
 
 export const createBusiness = z.object({
   user: register,
-  business: z.object(),
+  // business: z.object(),
 });

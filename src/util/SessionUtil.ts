@@ -17,7 +17,7 @@ const Errors = {
 
 // Options
 const Options = {
-  expiresIn: EnvVars.Jwt.Exp,
+  expiresIn: EnvVars.Jwt.ACCESS.EXPIRE,
 };
 
 
@@ -65,7 +65,7 @@ function clearCookie(res: Response): Response {
  */
 function _sign(data: string | object | Buffer): Promise<string> {
   return new Promise((res, rej) => {
-    jsonwebtoken.sign(data, EnvVars.Jwt.Secret, Options, (err, token) => {
+    jsonwebtoken.sign(data, EnvVars.Jwt.ACCESS.SECRET, Options, (err, token) => {
       return err ? rej(err) : res(token || '');
     });
   });
@@ -76,7 +76,7 @@ function _sign(data: string | object | Buffer): Promise<string> {
  */
 function _decode<T>(jwt: string): Promise<string | undefined | T> {
   return new Promise((res, rej) => {
-    jsonwebtoken.verify(jwt, EnvVars.Jwt.Secret, (err, decoded) => {
+    jsonwebtoken.verify(jwt, EnvVars.Jwt.ACCESS.SECRET, (err, decoded) => {
       return err ? rej(Errors.Validation) : res(decoded as T);
     });
   });

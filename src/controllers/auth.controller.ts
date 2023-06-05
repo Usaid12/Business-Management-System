@@ -1,29 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { RouteError } from '@src/other/classes';
 import { LoginPayload, RegisterPayload } from '@src/validators/auth.validator';
-import { compare, hash } from 'bcryptjs';
-import { User } from '@src/entities/user.entity';
+import { compare } from 'bcryptjs';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import { plainToInstance } from 'class-transformer';
-import { sign } from 'jsonwebtoken';
-import EnvVars from '@src/constants/EnvVars';
-import { Role } from '@src/entities/role.entity'
 import * as tokenService from '@src/services/token.service';
-import { createUser, getUserByEmail } from '@src/services/user.service';
-import { getRoleByName } from '@src/services/role.service';
+import * as userService from '@src/services/user.service';
+import { TokenTypes } from '@src/constants/enum';
+import { JwtAccessPayload } from '@src/routes/types/types';
 
-const user_data_fields = [
-  'id',
-  'email',
-  'firstName',
-  'lastName',
-  'phoneNumber',
-  'gender',
-  'profileCompleted',
-  'createdAt',
-  'deletedAt',
-  'updatedAt',
-];
 
 export const register = async (
   req: Request,
@@ -31,23 +15,23 @@ export const register = async (
   next: NextFunction,
 ) => {
   try {
-    const { role, ...data } = req.body as RegisterPayload;
-    const [user_found, hashed_password, role_data] = await Promise.all(
-      [
-        getUserByEmail(data.email),
-        hash(data.password, 10),
-        getRoleByName(role),
-      ]);
-    if (user_found) {
-      throw new RouteError(HttpStatusCodes.CONFLICT, 'User already exists');
-    }
-    data.password = hashed_password;
-    const user: User = await createUser({ ...data, roleId: role_data.id });
-    const access_token = tokenService.signAccessToken(user);
+    const data = req.body as RegisterPayload;
+    const user = await userService.createUser(data);
+    const payload: JwtAccessPayload = {
+      userId: user.id,
+      roleId: user.roleId,
+      email: user.email,
+      role: data.role,
+    };
+    const access_token = tokenService.signToken(payload, TokenTypes.ACCESS);
+    const refresh_token = tokenService.signToken(payload, TokenTypes.REFRESH);
     res.status(HttpStatusCodes.CREATED).json({
       data: {
         user,
-        access_token,
+        tokens: {
+          access_token,
+          refresh_token,
+        },
       },
       statusCode: HttpStatusCodes.CREATED,
       message: 'User registered successfully',
@@ -64,7 +48,7 @@ export const login = async (
 ) => {
   try {
     const data = req.body as LoginPayload;
-    const user = await getUserByEmail(data.email);
+    const user = await userService.getUserByEmail(data.email);
     if (!user) {
       throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Wrong Email, user not found');
     }
@@ -72,11 +56,22 @@ export const login = async (
     if (!is_valid) {
       throw new RouteError(HttpStatusCodes.FORBIDDEN, 'You have entered incorrect password');
     }
-    const access_token = tokenService.signAccessToken(user);
+    const payload: JwtAccessPayload = {
+      userId: user.id,
+      roleId: user.roleId,
+      email: user.email,
+      role: user.role.name,
+    };
+    const access_token = tokenService.signToken(payload, TokenTypes.ACCESS);
+    const refresh_token = tokenService.signToken(payload, TokenTypes.REFRESH);
+
     res.status(HttpStatusCodes.OK).json({
       data: {
         user,
-        access_token,
+        tokens: {
+          access_token,
+          refresh_token,
+        }
       },
       statusCode: HttpStatusCodes.OK,
       message: 'You are logged In',

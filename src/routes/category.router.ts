@@ -8,6 +8,7 @@ import { auth } from '@src/middlewares/auth';
 
 router.post(
   '/',
+  auth,
   validate(CategoryValidator.createCategory),
   CategoryController.createCategory,
 )

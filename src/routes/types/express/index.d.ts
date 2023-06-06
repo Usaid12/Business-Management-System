@@ -1,4 +1,6 @@
 import 'express';
+import { JwtAccessPayload } from '../types';
+import { UserInfo } from '@src/services/user.service';
 
 
 // **** Declaration Merging **** //
@@ -6,6 +8,7 @@ import 'express';
 declare module 'express' {
 
   export interface Request {
-    signedCookies: Record<string, string>;
+    payload?: JwtAccessPayload
+    user?: UserInfo
   }
 }

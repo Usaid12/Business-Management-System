@@ -60,24 +60,27 @@ export default class UserSerivce extends BaseService {
     return plainToInstance(User, user);
   }
 
-  public async findByEmail(email: string): Promise<User | null>{
+  public async findByEmail(email: string): Promise<any>{
     const result = await this.db.query(`
       SELECT 
-        id as "id",
-        first_name as "firstName",
-        last_name as "lastName",
-        gender, 
-        email, 
-        phone_number as "phoneNumber", 
-        role_id as "roleId", 
-        created_at as "createdAt", 
-        updated_at as "updatedAt", 
-        deleted_at as "deletedAt"
-      FROM users
-      WHERE email = $1 AND deleted_at IS NULL;
+        u.id as "id",
+        u.first_name as "firstName",
+        u.last_name as "lastName",
+        u.gender, 
+        u.email, 
+        u.phone_number as "phoneNumber", 
+        u.role_id as "roleId", 
+        u.password as password,
+        u.created_at as "createdAt", 
+        u.updated_at as "updatedAt", 
+        u.deleted_at as "deletedAt",
+        r.name as "role"
+      FROM users u
+      INNER JOIN roles r ON r.id = u.role_id
+      WHERE u.email = $1 AND u.deleted_at IS NULL;
     `, [email]);
     if (result.length === 0) return null;
-    return plainToInstance(User, result[0]);
+    return result[0];
   }
 
   public async findById(id: number){
@@ -85,19 +88,19 @@ export default class UserSerivce extends BaseService {
     `
       SELECT
         u.id as id,
-        u.first_name as firstName,
-        u.last_name as lastName,
-        u.gender as gender,
-        u.email as email,
-        u.role_id as roleId
-        u.phone_number as phoneNumber,
-        u.created_at as createdAt,
-        u.updated_at as updatedAt,
-        u.deleted_at as deletedAt
-        r.name as role,
+        u.first_name as "firstName",
+        u.last_name as "lastName",
+        u.gender as "gender",
+        u.email as "email",
+        u.role_id as "roleId",
+        u.phone_number as "phoneNumber",
+        u.created_at as "createdAt",
+        u.updated_at as "updatedAt",
+        u.deleted_at as "deletedAt",
+        r.name as "role"
       FROM users u
       INNER JOIN roles r ON u.role_id = r.id
-      WHERE u.id = $1
+      WHERE u.id = $1 AND u.deleted_at IS NULL
     `;
     const result = await db.query(query, [id]);
     if (result.length === 0) return null;

@@ -20,7 +20,10 @@ export const createBusiness = withTransaction(async (manager, req) => {
   return {
     data: {
       business,
-      user,
+      user: {
+        ...user,
+        password: undefined,
+      },
     },
     message: 'Business Created Successfully',
     statusCode: HttpStatusCodes.CREATED,

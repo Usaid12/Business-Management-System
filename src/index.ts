@@ -8,13 +8,11 @@ import { SuperAdminSeeder } from './seeders';
 async function bootstrap() {
   const SERVER_START_MSG = ('Express server started on port: ' +
     EnvVars.Port.toString());
-
-  await Promise.all([SuperAdminSeeder.run(db)]);
-
   if (!db.isInitialized) {
     await db.initialize();
     logger.info('Database has been initialized');
   }
+  await Promise.all([SuperAdminSeeder.run(db)]);
   server.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));
 }
 

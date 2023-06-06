@@ -19,14 +19,14 @@ router.post(
 router.get(
   '/',
   auth,
-  hasRole(Roles.SUPER_ADMIN),
+  hasRole(Roles.SUPER_ADMIN, Roles.CUSTOMER),
   CategoryController.getCategories,
 );
 
 router.get(
   '/:id',
   auth,
-  hasRole(Roles.SUPER_ADMIN),
+  hasRole(Roles.SUPER_ADMIN, Roles.CUSTOMER),
   CategoryController.getCategoryById,
 )
 

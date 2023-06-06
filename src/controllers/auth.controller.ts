@@ -25,7 +25,10 @@ export const register = withTransaction(async (
   const refresh_token = tokenService.signToken(payload, TokenTypes.REFRESH);
   return {
     data: {
-      user,
+      user: { 
+        ...user,
+        password: undefined,
+      },
       tokens: {
         access_token,
         refresh_token,
@@ -54,14 +57,14 @@ export const login = withTransaction(async (
     userId: user.id,
     roleId: user.roleId,
     email: user.email,
-    role: user.role.name,
+    role: user.role,
   };
   const access_token = tokenService.signToken(payload, TokenTypes.ACCESS);
   const refresh_token = tokenService.signToken(payload, TokenTypes.REFRESH);
 
   return {
     data: {
-      user,
+      user: { ...user, password: undefined },
       tokens: {
         access_token,
         refresh_token,

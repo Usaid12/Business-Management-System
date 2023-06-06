@@ -31,5 +31,14 @@ export default {
     User: process.env.DB_USER,
     Password: process.env.DB_PASSWORD,
     Name: process.env.DB_NAME,
+  },
+  SuperAdmin: {
+    FirstName: String(process.env.SUPER_ADMIN_FIRST_NAME),
+    LastName: String(process.env.SUPER_ADMIN_LAST_NAME),
+    Gender: String(process.env.SUPER_ADMIN_GENDER),
+    Email: String(process.env.SUPER_ADMIN_EMAIL),
+    Password: String(process.env.SUPER_ADMIN_PASSWORD),
+    ContactNo: String(process.env.SUPER_ADMIN_CONTACT_NO),
+    RoleId: parseInt(process.env.SUPER_ADMIN_ROLE_ID || '2'),
   }
 } as const;

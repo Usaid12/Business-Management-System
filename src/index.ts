@@ -5,6 +5,7 @@ import server from './server';
 import db from './database';
 import { SuperAdminSeeder } from './seeders';
 
+
 async function bootstrap() {
   const SERVER_START_MSG = ('Express server started on port: ' +
     EnvVars.Port.toString());
@@ -12,7 +13,9 @@ async function bootstrap() {
     await db.initialize();
     logger.info('Database has been initialized');
   }
+
   await Promise.all([SuperAdminSeeder.run(db)]);
+  logger.info('Super admin has been created');
   server.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));
 }
 

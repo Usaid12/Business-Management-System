@@ -28,7 +28,7 @@ export default class SuperAdminSeeder {
     WHERE u.role_id = 2;`)
 
     const result = Object.keys(checkSuperAdmin).length;
-    if (result !== 0){      
+    if (result === 0){      
           const superAdmin = await query_runner.manager.query(
             `INSERT INTO users (first_name, last_name, gender, email, password, phone_number, role_id, created_at, updated_at)
              VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) 
@@ -45,9 +45,9 @@ export default class SuperAdminSeeder {
                deleted_at as "deletedAt";
             `,
             [EnvVars.SuperAdmin.FirstName, EnvVars.SuperAdmin.LastName, 
-            EnvVars.SuperAdmin.Gender, EnvVars.SuperAdmin.Email, hash(EnvVars.SuperAdmin.Password,10), 
+            EnvVars.SuperAdmin.Gender, EnvVars.SuperAdmin.Email, await hash(EnvVars.SuperAdmin.Password,10), 
             EnvVars.SuperAdmin.ContactNo, EnvVars.SuperAdmin.RoleId]
-          );
+          )
           console.log(superAdmin)
         }
       // Print the created super admin user for testing

@@ -1,53 +1,15 @@
-import db from '@src/database';
 import { User } from '@src/entities/user.entity';
 import { RegisterPayload } from '@src/validators/auth.validator';
 import { hash } from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
-import { getRoleByName } from './role.service';
+import RoleService from './role.service';
 import { RouteError } from '@src/other/classes';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
+import { EntityManager } from 'typeorm';
+import db from '@src/database';
+import { BaseService } from './base.service';
 
 type CreateUserData = RegisterPayload
-export const createUser = async (data: CreateUserData): Promise<User> => {
-  const [user_found, role, hashed_password] = await Promise.all(
-    [
-      getUserByEmail(data.email),
-      getRoleByName(data.role),
-      hash(data.password, 10),
-    ]);
-  if (user_found) {
-    throw new RouteError(HttpStatusCodes.CONFLICT, 'User already exists');
-  }
-  const [user] = await db.query(`
-    INSERT INTO users (first_name, last_name, gender, email, password, phone_number, role_id, created_at, updated_at)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) 
-    RETURNING 
-      id, 
-      first_name as "firstName", 
-      last_name as "lastName", 
-      gender, 
-      email, 
-      password, 
-      phone_number as "phoneNumber", 
-      role_id as "roleId", 
-      created_at as "createdAt", 
-      updated_at as "updatedAt", 
-      deleted_at as "deletedAt";
-  `,
-  [data.firstName, data.lastName, data.gender, data.email, hashed_password, data.phoneNumber, parseInt(role.id.toString(), 10)]);
-  if (user === null) throw new RouteError(HttpStatusCodes.INTERNAL_SERVER_ERROR, 'There was error creating user');
-  return plainToInstance(User, user);
-};
-
-
-export const getUserByEmail = async (email: string): Promise<User | null> => {
-  const user = await User
-    .createQueryBuilder('u')
-    .innerJoinAndSelect('u.role', 'r')
-    .where('u.email = :email', { email })
-    .getOne();
-  return user;
-};
 
 export type UserInfo = Pick<User,
   'id' |
@@ -61,8 +23,65 @@ export type UserInfo = Pick<User,
   'deletedAt' |
   'updatedAt'> & { role: string; }
 
-export const getUserInfo = async (id: number): Promise<UserInfo | null> => {
-  const query =
+export default class UserSerivce extends BaseService {
+  constructor(dbManager: EntityManager) {
+    super(dbManager);
+  }
+
+  public async create(data: CreateUserData): Promise<User> {
+    const roleService = new RoleService(this.db);
+    const [user_found, role, hashed_password] = await Promise.all(
+      [
+        this.findByEmail(data.email),
+        roleService.findByName(data.role),
+        hash(data.password, 10),
+      ]);
+
+    if (user_found) {
+      throw new RouteError(HttpStatusCodes.CONFLICT, 'User already exists');
+    }
+    const [user] = await this.db.query(`
+      INSERT INTO users (first_name, last_name, gender, email, password, phone_number, role_id, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) 
+      RETURNING 
+        id, 
+        first_name as "firstName", 
+        last_name as "lastName", 
+        gender, 
+        email, 
+        phone_number as "phoneNumber", 
+        role_id as "roleId", 
+        created_at as "createdAt", 
+        updated_at as "updatedAt", 
+        deleted_at as "deletedAt";
+    `,
+    [data.firstName, data.lastName, data.gender, data.email, hashed_password, data.phoneNumber, parseInt(role.id.toString(), 10)]);
+    if (user === null) throw new RouteError(HttpStatusCodes.INTERNAL_SERVER_ERROR, 'There was error creating user');
+    return plainToInstance(User, user);
+  }
+
+  public async findByEmail(email: string): Promise<User | null>{
+    const result = await this.db.query(`
+      SELECT 
+        id as "id",
+        first_name as "firstName",
+        last_name as "lastName",
+        gender, 
+        email, 
+        phone_number as "phoneNumber", 
+        role_id as "roleId", 
+        created_at as "createdAt", 
+        updated_at as "updatedAt", 
+        deleted_at as "deletedAt"
+      FROM users
+      WHERE email = $1 AND deleted_at IS NULL;
+    `, [email]);
+    if (result.length === 0) return null;
+    return plainToInstance(User, result[0]);
+  }
+
+  public async findById(id: number){
+    const query =
     `
       SELECT
         u.id as id,
@@ -80,16 +99,9 @@ export const getUserInfo = async (id: number): Promise<UserInfo | null> => {
       INNER JOIN roles r ON u.role_id = r.id
       WHERE u.id = $1
     `;
-  const result = await db.query(query, [id]);
-  if (result.length === 0) return null;
-  return result[0] as UserInfo;
-};
-// export type UserWhereOptions = Partial<{
-//   id: number;
-//   email: string;
-// }>
+    const result = await db.query(query, [id]);
+    if (result.length === 0) return null;
+    return result[0] as UserInfo;
+  }
 
-// // type UserRelations = Partial<Record<'role', boolean>>;
-// // export const getUser = async (where?: UserWhereOptions, relations?: UserRelations) => {
-
-// // };
+}

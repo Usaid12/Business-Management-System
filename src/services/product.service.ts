@@ -1,32 +1,26 @@
-import db from '@src/database'
-interface CreateProductData {
-    name: string;
-    description: string;
-    price: number
-}
+import db from '@src/database';
+import { BaseService } from './base.service';
+import { Product } from '@src/entities/product.entity';
+import { plainToInstance } from 'class-transformer';
+import { CreateProductPayload } from '@src/validators/product.validator';
 
-interface ProductData extends CreateProductData {
-    id: number
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null
-}
-
-export const createProduct = async (data: CreateProductData): Promise<ProductData> => {
+export default class ProductService extends BaseService {
+  public async create(data: CreateProductPayload): Promise<Product> {
     const [product] = await db.query(
-        `INSERT INTO 
-          categories (name, description, price,created_at, updated_at) 
-          VALUES ($1, $2, $3, NOW(), NOW()) 
-        RETURNING 
-          id,
-          name, 
-          description,
-          price,
-          created_at, 
-          deleted_at, 
-          updated_at
-        `,
-        [data.name, data.description, data.price],
+      `INSERT INTO 
+        categories (name, description, price,created_at, updated_at) 
+        VALUES ($1, $2, $3, NOW(), NOW()) 
+      RETURNING 
+        id,
+        name, 
+        description,
+        price,
+        created_at as "createdAt", 
+        updated_at as "updatedAt", 
+        deleted_at as "deletedAt"
+      `,
+      [data.name, data.description, data.price],
     );
-    return product;
+    return plainToInstance(Product, product);
+  }
 }

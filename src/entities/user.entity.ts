@@ -1,8 +1,8 @@
 import { Gender } from '@src/constants/enum';
 import { BaseEntity } from '@src/util/BaseEntity';
-import { Entity, Column, ManyToOne, JoinColumn, OneToOne, OneToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Role } from './role.entity';
-import { Shop } from './business.entity';
+import { Business } from './business.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -31,6 +31,6 @@ export class User extends BaseEntity {
 	@JoinColumn({ name: 'role_id', foreignKeyConstraintName: 'user_role_fk' })
 	public role: Role;
 
-	@OneToMany(() => Shop, (shop) => shop.owner)
-	public shops: Shop[];
+	@OneToMany(() => Business, (business) => business.owner)
+	public businesses: Business[];
 }

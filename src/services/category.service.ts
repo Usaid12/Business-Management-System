@@ -1,24 +1,9 @@
-import db from '@src/database';
 import { evaluateWhereClause } from '@src/util/evaluateWhereClause';
 import { CreateCategoryPayload } from '@src/validators/category.validator';
-
-export const createCategory = async (data: CreateCategoryPayload) => {
-  const [category] = await db.query(
-    `INSERT INTO 
-      categories (name, parent_id, created_at, updated_at) 
-      VALUES ($1, $2, NOW(), NOW()) 
-    RETURNING 
-      id,
-      name, 
-      parent_id, 
-      created_at, 
-      deleted_at, 
-      updated_at
-    `,
-    [data.name, data?.parentId ?? null],
-  );
-  return category;
-};
+import { BaseService } from './base.service';
+import { EntityManager } from 'typeorm';
+import { Category } from '@src/entities/category.entity';
+import { plainToInstance } from 'class-transformer';
 
 
 export type GetCategoryWhere = {
@@ -27,39 +12,62 @@ export type GetCategoryWhere = {
 	parent_id: number | null
 }
 
-const makeSelectCategoryQuery = (where?: Partial<GetCategoryWhere>) => {
-  let query = `SELECT 
-  c.id as id, 
-  c.name as name, 
-  c.parent_id as parentId, 
-  c.created_at as createdAt,
-  c.updated_at as updatedAt, 
-  c.deleted_at as deletedAt 
-FROM categories c`;
-  let whereExp = evaluateWhereClause(where, 'c');
-  if (whereExp !== '') { 
-    whereExp += ' AND ';
+export default class CategorySerivce extends BaseService {
+  constructor(dbManager: EntityManager) {
+    super(dbManager);
   }
-  whereExp += 'c.deleted_at IS NULL';
-  query += ` WHERE ${whereExp}`;
-  return query;
-};
 
-export const getCategory = async (where?: Partial<GetCategoryWhere>) => {
-  let query = makeSelectCategoryQuery(where);
-  query += ' LIMIT 1';
-  const result = await db.query(query);
-  if (result.length === 0) return null;
-  return result[0];
-};
+  public async create(data: CreateCategoryPayload): Promise<Category> {
+    const [category] = await this.db.query(
+      `INSERT INTO 
+        categories (name, parent_id, created_at, updated_at) 
+        VALUES ($1, $2, NOW(), NOW()) 
+      RETURNING 
+        id,
+        name, 
+        parent_id as "parentId", 
+        created_at as "createdAt", 
+        deleted_at as "deletedAt", 
+        updated_at as "updatedAt"
+      `,
+      [data.name, data?.parentId ?? null],
+    );
+    return plainToInstance(Category, category);
+  }
 
-export const getCategoryById = async (id: number) => {
-  return await getCategory({ id });
-};
+  private makeSelectCategoryQuery = (where?: Partial<GetCategoryWhere>) => {
+    let query = `SELECT 
+    c.id as "id", 
+    c.name as "name", 
+    c.parent_id as "parentId", 
+    c.created_at as "createdAt",
+    c.updated_at as "updatedAt", 
+    c.deleted_at as "deletedAt" 
+  FROM categories c`;
+    let whereExp = evaluateWhereClause(where, 'c');
+    if (whereExp !== '') { 
+      whereExp += ' AND ';
+    }
+    whereExp += 'c.deleted_at IS NULL';
+    query += ` WHERE ${whereExp}`;
+    return query;
+  };
 
-export const getCategories = async (where?: Partial<GetCategoryWhere>) => {
-  const query = makeSelectCategoryQuery(where);
-  const result = await db.query(query);
-  return result;
-};
+  public async findOne(where?: Partial<GetCategoryWhere>): Promise<Category | null> {
+    let query = this.makeSelectCategoryQuery(where);
+    query += ' LIMIT 1';
+    const result = await this.db.query(query);
+    if (result.length === 0) return null;
+    return plainToInstance(Category, result[0]);
+  }
 
+  public async findById(id: number){
+    return await this.findOne({ id });
+  }
+
+  public async findAll(where?: Partial<GetCategoryWhere>): Promise<Category>{
+    const query = this.makeSelectCategoryQuery(where);
+    const result = await this.db.query(query);
+    return result;
+  }
+}

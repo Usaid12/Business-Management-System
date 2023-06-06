@@ -10,8 +10,8 @@ import { validate } from '@src/middlewares/validate';
 
 router.post(
   '/',  
-  auth,
-  hasRole(Roles.SUPER_ADMIN),
+  // auth,
+  // hasRole(Roles.SUPER_ADMIN),
   validate(BusinessValidator.createBusiness),
   BusinessController.createBusiness,
 )

@@ -1,6 +1,7 @@
 import { BaseEntity } from '@src/util/BaseEntity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Business } from './business.entity';
+import { Category } from './category.entity';
 
 @Entity({ name: 'products' })
 export class Product extends BaseEntity {
@@ -14,9 +15,16 @@ export class Product extends BaseEntity {
   public price: number;  
 
   @Column({ name: 'business_id', type: 'integer' })
-  public business_id: number;
+  public businessId: number;
+
+  @Column({ name: 'category_id', type: 'integer' })
+  public categoryId: number;
 
   @ManyToOne(() => Business, (business) => business.products)
   @JoinColumn({ name: 'business_id', foreignKeyConstraintName: 'product_business_fk' })
   public business: Business;
+
+  @ManyToOne(() => Category, (category) => category.products)
+  @JoinColumn({ name: 'category_id', foreignKeyConstraintName: 'product_category_fk' })
+  public category: Category;
 }

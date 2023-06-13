@@ -30,5 +30,34 @@ export default class BusinessService extends BaseService {
   `, [data.name, data.email, data.contactNo, data.city, data.country, data.postalCode, data.addressLine1, data?.addressLine2 ?? '', data.owner_id]);
     return plainToInstance(Business, business);
   } 
+
+
+  public async findByOwner(owner_id: number): Promise<Business | null> {
+    const result = await this.db.query(`
+      SELECT 
+        b.id as id,
+        b.name as name,
+        b.email as email,
+        b.city as city,
+        b.country as country,
+        b.address_line_1 as "addressLine1",
+        b.address_line_2 as "addressLine2",
+        b.postal_code as "postalCode",
+        b.owner_id as "ownerId",
+        b.created_at as "createdAt",
+        b.updated_at as "updatedAt",
+        b.deleted_at as "deletedAt"
+      FROM businesses b
+      WHERE b.owner_id = $1 AND b.deleted_at IS NULL
+      LIMIT 1;
+    `, [owner_id]);
+
+    if (result.length === 0) return null;
+    return plainToInstance(Business, result[0]);
+  }
+
+  public async findAll() {
+
+  }
 }
 

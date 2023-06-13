@@ -14,7 +14,7 @@ export const register = z.object({
 
 export const login = z.object({
   email: z.string(),
-  password: z.string().regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, 'Password must be strong'),
+  password: z.string(),
 });
 
 export type RegisterPayload = z.infer<typeof register>

@@ -37,5 +37,6 @@ export class Business extends BaseEntity {
 	public owner: User;
 
 	@OneToMany(() => Product, (product) => product.business)
-	products: Product[];
+	public products: Product[];
+
 }

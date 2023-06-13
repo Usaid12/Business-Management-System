@@ -17,7 +17,9 @@ router.post(
 )
 
 router.get(
-  '/',  
+  '/',
+  auth,
+  hasRole(Roles.SUPER_ADMIN, Roles.BUSINESS_ADMIN),
   BusinessController.getBusinesses,
 );
 

@@ -1,5 +1,6 @@
 import { BaseEntity } from '@src/util/BaseEntity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Product } from './product.entity';
 
 @Entity({ name: 'categories' })
 export class Category extends BaseEntity {
@@ -15,4 +16,7 @@ export class Category extends BaseEntity {
 
   @OneToMany(() => Category, category => category.parent)
   public children: Category[];
+
+  @OneToMany(() => Product, product => product.category)
+  public products: Product[];
 }

@@ -56,8 +56,29 @@ export default class BusinessService extends BaseService {
     return plainToInstance(Business, result[0]);
   }
 
+  // TODO: write a query to find all the business, make sure to dynamically use the where clause
+  // The where clause should atleast support searching through name, email, contactNo, city and country
   public async findAll() {
 
+  }
+
+
+  // TODO: write a query to find the business with id, make sure to dynamically use the where clause
+  // The where clause should atleast support searching through name, email, contactNo, city and country
+  public async findById() {
+
+  }
+
+  // TODO: write a query to update the business details with id
+  // You cannot update the owner of business;
+  public async update(id: number, data: Partial<Omit<CreateBusinessData, 'owner_id'>>) {}
+
+  // TODO: write a query to delete the business, 
+  // HINT: you don't need to run delete the query,
+  // instead run the update query and add the deleted_at value to current date time using NOW() function
+
+  public async delete(id: number) {
+    
   }
 }
 

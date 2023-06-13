@@ -5,6 +5,8 @@ import { CreateProductPayload } from '@src/validators/product.validator';
 import BusinessService from '@src/services/business.service';
 import { RouteError } from '@src/other/classes';
 import CategorySerivce from '@src/services/category.service';
+import { Multer } from 'multer';
+import { satisfies } from 'semver';
 
 export const createProduct = withTransaction(async (manager, req) => {
   if (!req.payload) {
@@ -14,6 +16,7 @@ export const createProduct = withTransaction(async (manager, req) => {
   const businessService = new BusinessService(manager);
   const categoryService = new CategorySerivce(manager);
 
+  const imageUrls = (req.files as Array<Express.Multer.File>).map((file) => `http://localhost:5000/products/${file.filename}`);
   const data = req.body;
   data.price = parseInt(data.price);
   const childrens = await categoryService.findChildrens(parseInt(data.category_id));

@@ -88,4 +88,12 @@ export default class ProductService extends BaseService {
     return await this.findOne({ id });
   }
 
+  // TODO: write a query to insert product images
+  public async addImages(images: string[], product_id: number) {
+  }
+
+  // TODO: update a product using it's id
+  public async updateProduct(product_id: number, data: Partial<CreateProductData>) {
+
+  }
 }

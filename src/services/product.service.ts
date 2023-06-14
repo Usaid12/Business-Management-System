@@ -4,6 +4,8 @@ import { Product } from '@src/entities/product.entity';
 import { plainToInstance } from 'class-transformer';
 import { CreateProductPayload } from '@src/validators/product.validator';
 import { evaluateWhereClause } from '@src/util/evaluateWhereClause';
+import { DataSource} from 'typeorm';
+import logger from 'jet-logger' 
 
 interface CreateProductData extends CreateProductPayload {
   business_id: number;
@@ -89,7 +91,43 @@ export default class ProductService extends BaseService {
   }
 
   // TODO: write a query to insert product images
-  public async addImages(images: string[], product_id: number) {
+  public async addImages(images: string[], product_id: number , dataSource:DataSource) {
+    
+    const query_runner = dataSource.createQueryRunner()
+    try {
+      await query_runner.startTransaction();
+      for(const image of images){
+        await query_runner.query(
+          `INSERT INTO 
+            productImages (product_id, img_loc, created_at, updated_at) 
+            VALUES ($1, $2, NOW(), NOW()) 
+          RETURNING 
+            id,
+            product_id as "productId",
+            img_loc as "imgLoc",
+            created_at as "createdAt", 
+            updated_at as "updatedAt", 
+            deleted_at as "deletedAt"
+          `,
+          [product_id, image],
+        );
+
+        await query_runner.commitTransaction()
+
+      }
+    } catch (error) {
+      await query_runner.rollbackTransaction()
+      if (error instanceof Error) {
+          logger.err(error.message)
+      }
+      else {
+        logger.err('Something unexpected occured.')
+      }
+    }
+    finally{
+      await query_runner.release()
+    }
+
   }
 
   // TODO: update a product using it's id

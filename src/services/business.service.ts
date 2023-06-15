@@ -3,6 +3,15 @@ import { CreateBusinessPayload } from '@src/validators/business.validator';
 import { plainToInstance } from 'class-transformer';
 import { EntityManager } from 'typeorm';
 import { BaseService } from './base.service';
+import { evaluateWhereClause } from '@src/util/evaluateWhereClause';
+
+export type GetBusinessWhere = {
+	owner_id: number;
+	name: string;
+	city: string;
+  country: string,
+  email: string
+}
 
 type CreateBusinessData = CreateBusinessPayload['business'] & { owner_id: number }
 
@@ -56,29 +65,87 @@ export default class BusinessService extends BaseService {
     return plainToInstance(Business, result[0]);
   }
 
-  // TODO: write a query to find all the business, make sure to dynamically use the where clause
-  // The where clause should atleast support searching through name, email, contactNo, city and country
-  public async findAll() {
+  public findAll = (where?: Partial<GetBusinessWhere>) => {
+    let result = `
+    SELECT 
+        b.id as id,
+        b.name as name,
+        b.email as email,
+        b.city as city,
+        b.country as country,
+        b.address_line_1 as "addressLine1",
+        b.address_line_2 as "addressLine2",
+        b.postal_code as "postalCode",
+        b.owner_id as "ownerId",
+        b.created_at as "createdAt",
+        b.updated_at as "updatedAt",
+        b.deleted_at as "deletedAt"
+      FROM businesses b`;
+      let whereExp = evaluateWhereClause(where, 'b');
+      if (whereExp !== '') { 
+        whereExp += ' AND ';
+      }
+      whereExp += 'b.deleted_at IS NULL';
+      result += ` WHERE ${whereExp}`;
+      return result;
+    };
+  
 
+
+  public async findById (id:number) {
+    const result = await this.db.query(`
+    SELECT 
+      b.id as id,
+      b.name as name,
+      b.email as email,
+      b.city as city,
+      b.country as country,
+      b.address_line_1 as "addressLine1",
+      b.address_line_2 as "addressLine2",
+      b.postal_code as "postalCode",
+      b.owner_id as "ownerId",
+      b.created_at as "createdAt",
+      b.updated_at as "updatedAt",
+      b.deleted_at as "deletedAt"
+    FROM businesses b
+    WHERE b.id = $1 AND b.deleted_at IS NULL
+    LIMIT 1;
+  `, [id]);
+
+  if (result.length === 0) return null;
+  return plainToInstance(Business, result[0]);
+}
+      
+
+  public async update(id: number) {
+    const result = await this.db.query(`
+    UPDATE businesses
+       SET b.name = name,
+       SET b.email = email,
+       SET b.city = city,
+       SET b.country = country,
+       SET b.address_line_1 = "addressLine1",
+       SET b.address_line_2 = "addressLine2",
+       SET b.postal_code = "postalCode",
+       SET b.created_at = "createdAt",
+       SET b.updated_at = "updatedAt",
+       SET b.deleted_at = "deletedAt"
+       WHERE b.id = $1 AND b.deleted_at IS NULL
+    `[id])
+
+    if (result.length === 0) return null;
+    return plainToInstance(Business, result[0]);
   }
-
-
-  // TODO: write a query to find the business with id, make sure to dynamically use the where clause
-  // The where clause should atleast support searching through name, email, contactNo, city and country
-  public async findById() {
-
-  }
-
-  // TODO: write a query to update the business details with id
-  // You cannot update the owner of business;
-  public async update(id: number, data: Partial<Omit<CreateBusinessData, 'owner_id'>>) {}
-
-  // TODO: write a query to delete the business, 
-  // HINT: you don't need to run delete the query,
-  // instead run the update query and add the deleted_at value to current date time using NOW() function
 
   public async delete(id: number) {
-    
+    const result = await this.db.query(`
+    UPDATE businesses
+    SET b.deleted_at = NOW()
+    WHERE b.id = $1
+    `[id])
+
+    if (result.length === 0) return null;
+    return plainToInstance(Business, result[0]);
   }
 }
 

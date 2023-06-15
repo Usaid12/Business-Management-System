@@ -7,6 +7,7 @@ import { Roles } from '@src/constants/roles';
 import { withTransaction } from '@src/util/withTransaction';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import { RouteError } from '@src/other/classes';
+import type { GetBusinessWhere } from '@src/services/business.service';
 
 export const createBusiness = withTransaction(async (manager, req) => {
   const data = req.body as CreateBusinessPayload;
@@ -33,24 +34,35 @@ export const createBusiness = withTransaction(async (manager, req) => {
 });
 
 export const getBusinesses = withTransaction(async (manager, req) => {
+  const id = parseInt(req.params.id, 10);
   if (!req.payload) {
     throw new RouteError(HttpStatusCodes.INTERNAL_SERVER_ERROR, 'Current User Information is required');
   }
   const data: any[] = [];
   const businessService = new BusinessService(manager);
   if (req.payload.role === Roles.BUSINESS_ADMIN) {
-    // get business admin business
+    const business = await businessService.findById(id);
   } else if (req.payload.role === Roles.SUPER_ADMIN || req.payload.role === Roles.CUSTOMER) {
-    // data = 
-    // get all businesses
+     const business = businessService.findAll();
   }
-  // agr super admin call kare ga toh sare business
-  // agr business admin toh wohe business chaye jo uska hoga
-
-
   return {
     data,
     message: 'Business List',
     statusCode: HttpStatusCodes.OK,
   };
 });
+
+export const updateBusinesses = withTransaction(async (manager, req) => {
+  const id = parseInt(req.params.id, 10);
+  if (!req.payload) {
+    throw new RouteError(HttpStatusCodes.INTERNAL_SERVER_ERROR, 'Current User Information is required');
+  }
+  const data: any[] = [];
+  const businessService = new BusinessService(manager);
+  const updateBusinesses = businessService.update(id);
+  return {
+    data : updateBusinesses ,
+    message: 'Business Updated',
+    statusCode: HttpStatusCodes.OK,
+  };
+})

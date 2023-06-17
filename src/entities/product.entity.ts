@@ -3,6 +3,8 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Business } from './business.entity';
 import { Category } from './category.entity';
 import { ProductImages } from './product_images.entity';
+import { ProductReviews } from './product_reviews.entity';
+import { Cart } from './cart.entity';
 
 @Entity({ name: 'products' })
 export class Product extends BaseEntity {
@@ -31,4 +33,10 @@ export class Product extends BaseEntity {
 
   @OneToMany(() => ProductImages, (productImages) => productImages.product)
   public images: Array<ProductImages>;
+
+  @OneToMany(() => ProductReviews, (productReviews) => productReviews.product)
+  public reviews: Array<ProductImages>;
+
+  @OneToMany(() => Cart, (cart) => cart.product)
+  public cartItems: Array<Cart>;
 }

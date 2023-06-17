@@ -1,18 +1,17 @@
 import { generatePassword } from '@src/util/GeneratePassword';
-import { NextFunction, Request, Response } from 'express';
 import UserSerivce  from '@src/services/user.service';
 import BusinessService from '@src/services/business.service';
 import { CreateBusinessPayload } from '@src/validators/business.validator';
 import { Roles } from '@src/constants/roles';
 import { withTransaction } from '@src/util/withTransaction';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
+import { getLocals } from '@src/util/locals';
+import { Business } from '@src/entities/business.entity';
 import { RouteError } from '@src/other/classes';
-import type { GetBusinessWhere } from '@src/services/business.service';
 
 export const createBusiness = withTransaction(async (manager, req) => {
   const data = req.body as CreateBusinessPayload;
   const password = generatePassword(8);
-  console.log(password);
   const userSerivce = new UserSerivce(manager);
   const businessService = new BusinessService(manager);
   const user = await userSerivce.create({ ...data.user, password, role: Roles.BUSINESS_ADMIN });
@@ -33,17 +32,19 @@ export const createBusiness = withTransaction(async (manager, req) => {
   };
 });
 
-export const getBusinesses = withTransaction(async (manager, req) => {
-  const id = parseInt(req.params.id, 10);
-  if (!req.payload) {
-    throw new RouteError(HttpStatusCodes.INTERNAL_SERVER_ERROR, 'Current User Information is required');
-  }
-  const data: any[] = [];
+export const getBusinesses = withTransaction(async (manager, req, res) => {
+  const payload = getLocals(res.locals, 'payload');
+  const data: Business[] = [];
   const businessService = new BusinessService(manager);
-  if (req.payload.role === Roles.BUSINESS_ADMIN) {
-    const business = await businessService.findById(id);
-  } else if (req.payload.role === Roles.SUPER_ADMIN || req.payload.role === Roles.CUSTOMER) {
-     const business = businessService.findAll();
+  if (payload.role === Roles.BUSINESS_ADMIN) {
+    const myBusiness = await businessService.findByOwner(payload.userId);
+    if (!myBusiness) {
+      throw new RouteError(HttpStatusCodes.NOT_FOUND, 'You haven\'t created your business');
+    }
+    data.push(myBusiness);
+  } else if (payload.role === Roles.SUPER_ADMIN || payload.role === Roles.CUSTOMER) {
+    const businesses = await businessService.findAll();
+    data.push(...businesses);
   }
   return {
     data,
@@ -52,17 +53,14 @@ export const getBusinesses = withTransaction(async (manager, req) => {
   };
 });
 
-export const updateBusinesses = withTransaction(async (manager, req) => {
+export const updateBusinesses = withTransaction(async (manager, req, res) => {
   const id = parseInt(req.params.id, 10);
-  if (!req.payload) {
-    throw new RouteError(HttpStatusCodes.INTERNAL_SERVER_ERROR, 'Current User Information is required');
-  }
   const data: any[] = [];
   const businessService = new BusinessService(manager);
-  const updateBusinesses = businessService.update(id);
+  const updateBusinesses = await businessService.update(id);
   return {
     data : updateBusinesses ,
     message: 'Business Updated',
     statusCode: HttpStatusCodes.OK,
   };
-})
+});

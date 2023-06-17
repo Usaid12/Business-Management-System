@@ -4,6 +4,7 @@ import { Product } from '@src/entities/product.entity';
 import { plainToInstance } from 'class-transformer';
 import { CreateProductPayload } from '@src/validators/product.validator';
 import { evaluateWhereClause } from '@src/util/evaluateWhereClause';
+import { ProductImages } from '@src/entities/product_images.entity';
 
 interface CreateProductData extends CreateProductPayload {
   business_id: number;
@@ -90,10 +91,23 @@ export default class ProductService extends BaseService {
 
   // TODO: write a query to insert product images
   public async addImages(images: string[], product_id: number) {
+
+    const values = images.map(image => `(${image}, ${product_id})`).join(', ');
+    const result: any[] = await this.db.query(`
+      INSERT INTO product_images (image_url, product_id) VALUES ${values} 
+      RETURNING 
+        id, 
+        image_url as "imageUrl", 
+        product_id as "productId", 
+        created_at as "createdAt", 
+        updated_at as "updatedAt", 
+        deleted_at as "deletedAt";
+    `);
+    return plainToInstance(ProductImages, result);
   }
 
   // TODO: update a product using it's id
   public async updateProduct(product_id: number, data: Partial<CreateProductData>) {
-
+    
   }
 }

@@ -1,7 +1,8 @@
 import { BaseEntity } from '@src/util/BaseEntity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Business } from './business.entity';
 import { Category } from './category.entity';
+import { ProductImages } from './product_images.entity';
 
 @Entity({ name: 'products' })
 export class Product extends BaseEntity {
@@ -27,4 +28,7 @@ export class Product extends BaseEntity {
   @ManyToOne(() => Category, (category) => category.products)
   @JoinColumn({ name: 'category_id', foreignKeyConstraintName: 'product_category_fk' })
   public category: Category;
+
+  @OneToMany(() => ProductImages, (productImages) => productImages.product)
+  public images: Array<ProductImages>;
 }

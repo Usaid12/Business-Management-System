@@ -9,13 +9,13 @@ type ApiResponse<T> = {
   message: string;
 }
 
-export const withTransaction = <T>(handler: (db: EntityManager, req: Request) => Promise<ApiResponse<T>>) => {
+export const withTransaction = <TData>(handler: (db: EntityManager, req: Request, res: Response) => Promise<ApiResponse<TData>>) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const query_runner = db.createQueryRunner();
     try {
       await query_runner.connect();
       await query_runner.startTransaction();
-      const result = await handler(query_runner.manager, req);
+      const result = await handler(query_runner.manager, req, res);
       await query_runner.commitTransaction();
       return res.status(result.statusCode).json(result);
     } catch (error) {

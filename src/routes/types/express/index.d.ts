@@ -7,8 +7,10 @@ import { UserInfo } from '@src/services/user.service';
 
 declare module 'express' {
 
-  export interface Request {
-    payload?: JwtAccessPayload
-    user?: UserInfo
+  export interface Response extends Express.Response {
+    locals: {
+      payload?: JwtAccessPayload
+      user?: UserInfo
+    }
   }
 }

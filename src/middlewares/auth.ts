@@ -8,7 +8,7 @@ import { TokenTypes } from '@src/constants/enum';
 import { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 import db from '@src/database';
 
-export const auth = async (req: Request, _res: Response, next: NextFunction) => {
+export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authorization = req.headers['authorization'];
     if (!authorization || authorization === '') {
@@ -24,13 +24,13 @@ export const auth = async (req: Request, _res: Response, next: NextFunction) => 
     if (!user) {
       throw new RouteError(HttpStatusCodes.NOT_FOUND, 'User not found');
     }
-    req.payload = {
+    res.locals.payload = {
       userId: payload.userId,
       roleId: payload.roleId,
       email: payload.email,
       role: payload.role,
     };
-    req.user = user;
+    res.locals.user = user;
     next();
   } catch (error) {
     if (error instanceof TokenExpiredError) {

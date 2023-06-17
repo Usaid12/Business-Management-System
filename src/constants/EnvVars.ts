@@ -3,6 +3,7 @@ import '../pre-start';
 export default {
   NodeEnv: process.env.NODE_ENV ?? 'dev',
   Port: (process.env.PORT ?? 0),
+  BackendDomain: (process.env.PROTOCOL?.toString() ?? '') + '://' + (process.env.HOST?.toString() ?? '') + ':' + (process.env.PORT?.toString() ?? ''),
   CookieProps: {
     Key: 'ExpressGeneratorTs',
     Secret: (process.env.COOKIE_SECRET ?? ''),

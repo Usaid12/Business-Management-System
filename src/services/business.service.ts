@@ -65,7 +65,7 @@ export default class BusinessService extends BaseService {
     return plainToInstance(Business, result[0]);
   }
 
-  public findAll = (where?: Partial<GetBusinessWhere>) => {
+  private makeSelectBusinessQuery(where?: Partial<GetBusinessWhere>) {
     let result = `
     SELECT 
         b.id as id,
@@ -73,6 +73,7 @@ export default class BusinessService extends BaseService {
         b.email as email,
         b.city as city,
         b.country as country,
+        b.contact_no as "contactNo",
         b.address_line_1 as "addressLine1",
         b.address_line_2 as "addressLine2",
         b.postal_code as "postalCode",
@@ -81,17 +82,20 @@ export default class BusinessService extends BaseService {
         b.updated_at as "updatedAt",
         b.deleted_at as "deletedAt"
       FROM businesses b`;
-      let whereExp = evaluateWhereClause(where, 'b');
-      if (whereExp !== '') { 
-        whereExp += ' AND ';
-      }
-      whereExp += 'b.deleted_at IS NULL';
-      result += ` WHERE ${whereExp}`;
-      return result;
-    };
+    let whereExp = evaluateWhereClause(where, 'b');
+    if (whereExp !== '') { 
+      whereExp += ' AND ';
+    }
+    whereExp += 'b.deleted_at IS NULL';
+    result += ` WHERE ${whereExp}`;
+    return result;
+  }
+
+  public async findAll(where?: Partial<GetBusinessWhere>): Promise<Array<Business>>{
+    const data: any[] = await this.db.query(this.makeSelectBusinessQuery(where));
+    return plainToInstance(Business, data);
+  }
   
-
-
   public async findById (id:number) {
     const result = await this.db.query(`
     SELECT 
@@ -112,9 +116,9 @@ export default class BusinessService extends BaseService {
     LIMIT 1;
   `, [id]);
 
-  if (result.length === 0) return null;
-  return plainToInstance(Business, result[0]);
-}
+    if (result.length === 0) return null;
+    return plainToInstance(Business, result[0]);
+  }
       
 
   public async update(id: number) {
@@ -131,7 +135,7 @@ export default class BusinessService extends BaseService {
        SET b.updated_at = "updatedAt",
        SET b.deleted_at = "deletedAt"
        WHERE b.id = $1 AND b.deleted_at IS NULL
-    `[id])
+    `[id]);
 
     if (result.length === 0) return null;
     return plainToInstance(Business, result[0]);
@@ -142,7 +146,7 @@ export default class BusinessService extends BaseService {
     UPDATE businesses
     SET b.deleted_at = NOW()
     WHERE b.id = $1
-    `[id])
+    `[id]);
 
     if (result.length === 0) return null;
     return plainToInstance(Business, result[0]);

@@ -1,6 +1,7 @@
 import EnvVars from '@src/constants/EnvVars';
 import { TokenTypes } from '@src/constants/enum';
 import { User } from '@src/entities/user.entity';
+import { Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
 
 
@@ -19,6 +20,5 @@ export const verifyToken = (token: string, type: TokenTypes) => {
   const payload = verify(token, SECRET);
   if (typeof payload === 'string') return { data: payload };
   return payload;
-}
-
+};
 

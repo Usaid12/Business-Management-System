@@ -1,9 +1,9 @@
 export enum Gender {
-  MALE = "male",
-  FEMALE = "female"
+  MALE = 'male',
+  FEMALE = 'female'
 }
 
 export enum TokenTypes {
-  ACCESS = "access",
-  REFRESH = "refresh"
+  ACCESS = 'access',
+  REFRESH = 'refresh'
 }

@@ -15,7 +15,6 @@ async function bootstrap() {
   }
 
   await Promise.all([SuperAdminSeeder.run(db)]);
-  logger.info('Super admin has been created');
   server.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));
 }
 

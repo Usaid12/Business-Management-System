@@ -14,7 +14,7 @@ router.post(
   // hasRole(Roles.SUPER_ADMIN),
   validate(BusinessValidator.createBusiness),
   BusinessController.createBusiness,
-)
+);
 
 router.get(
   '/',

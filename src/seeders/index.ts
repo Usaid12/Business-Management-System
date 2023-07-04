@@ -1,1 +1,1 @@
-export { default as SuperAdminSeeder } from './SuperAdminSeeder'
+export { default as SuperAdminSeeder } from './SuperAdminSeeder';

@@ -5,17 +5,21 @@ import { Category } from './category.entity';
 import { ProductImages } from './product_images.entity';
 import { ProductReviews } from './product_reviews.entity';
 import { Cart } from './cart.entity';
+import { Order } from './order.entity';
 
 @Entity({ name: 'products' })
 export class Product extends BaseEntity {
   @Column({ name: 'name', type: 'varchar' })
   public name: string;
-  
+
   @Column({ name: 'description', type: 'text' })
   public description: string;
-  
+
   @Column({ name: 'price', type: 'integer' })
-  public price: number;  
+  public price: number;
+
+  @Column({ name: 'thumbnail', type: 'text' })
+  public thumbnail: string;
 
   @Column({ name: 'business_id', type: 'integer' })
   public businessId: number;
@@ -39,4 +43,7 @@ export class Product extends BaseEntity {
 
   @OneToMany(() => Cart, (cart) => cart.product)
   public cartItems: Array<Cart>;
+
+  @OneToMany(() => Order, (order) => order.product)
+  public orders: Array<Order>;
 }

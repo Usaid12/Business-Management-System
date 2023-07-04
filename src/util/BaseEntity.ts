@@ -1,4 +1,4 @@
-import { CreateDateColumn, DeleteDateColumn, BaseEntity as ORMBaseEntity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { CreateDateColumn, DeleteDateColumn, BaseEntity as ORMBaseEntity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 export class BaseEntity extends ORMBaseEntity {
   @PrimaryGeneratedColumn({ name: 'id' })

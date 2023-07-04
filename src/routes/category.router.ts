@@ -1,7 +1,7 @@
-import { Router } from 'express'
+import { Router } from 'express';
 const router = Router();
-import * as CategoryController from '@src/controllers/category.controller'
-import * as CategoryValidator from '@src/validators/category.validator'
+import * as CategoryController from '@src/controllers/category.controller';
+import * as CategoryValidator from '@src/validators/category.validator';
 
 import { validate } from '@src/middlewares/validate';
 import { auth } from '@src/middlewares/auth';
@@ -14,7 +14,7 @@ router.post(
   hasRole(Roles.SUPER_ADMIN),
   validate(CategoryValidator.createCategory),
   CategoryController.createCategory,
-)
+);
 
 router.get(
   '/',
@@ -28,6 +28,6 @@ router.get(
   auth,
   hasRole(Roles.SUPER_ADMIN, Roles.CUSTOMER),
   CategoryController.getCategoryById,
-)
+);
 
 export default router;

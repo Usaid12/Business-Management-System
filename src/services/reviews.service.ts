@@ -3,6 +3,7 @@ import { BaseService } from './base.service';
 import { ProductReviews } from '@src/entities/product_reviews.entity';
 import { evaluateWhereClause } from '@src/util/evaluateWhereClause';
 import { CreateReviewPayload } from '@src/validators/reviews.validator';
+import logger from 'jet-logger';
 
 interface productReviews {
     id:number,
@@ -15,18 +16,18 @@ type reviewWhere = Partial <productReviews>;
 
 export default class ReviewService extends BaseService{
     public async writeReviews (data:productReviews){
-       const [ reviewItem ] = await this.db.query(`
-       INSERT INTO product_reviews (user_id, product_id, comments, created_at, updated_at)
-       VALUES($1, $2, $3 ,NOW(), NOW())
-       RETURNING
-       id as "id"
+      const [reviewItem] = await this.db.query(`
+      INSERT INTO product_reviews (user_id, product_id, comments, created_at, updated_at)
+      VALUES ($1, $2, $3, NOW(), NOW())
+      RETURNING
+        id as "id",
         user_id as "userId",
         product_id as "productId",
         comments as "comments",
         created_at as "createdAt",
-        updated_at as "updatedAt",
-       `,[data.user_id, data.product_id, data.comments]);
-       return plainToInstance(ProductReviews,reviewItem);
+        updated_at as "updatedAt"
+    `, [data.user_id, data.product_id, data.comments]);
+    
     }
   
     public async findReviews(where: reviewWhere) {
@@ -45,20 +46,21 @@ export default class ReviewService extends BaseService{
         return whereClause;
       }
 
-
       private makeSelectQuery(where: reviewWhere) {
         const whereClause = this.createWhereClause(where);
-        const query = `SELECT 
-          r.id as "id"
+        const query = `
+        SELECT 
+          r.id as "id",
           r.user_id as "userId",
           r.product_id as "productId",
-          r.quantity as "quantity",
           r.created_at as "createdAt",
           r.updated_at as "updatedAt",
           r.deleted_at as "deletedAt"
         FROM product_reviews r
-        WHERE ${whereClause}`;
-        return query;
+        WHERE ${whereClause}
+      `;
+      return query;
+      
       }
 
 
@@ -71,9 +73,10 @@ export default class ReviewService extends BaseService{
 
       public async deleteReview (data:productReviews){
         const result = await this.db.query(`
-        UPDATE product_reviews
-        SET r.deleted_at = NOW()
-        where r.user_id = $1 AND r.product_id = $2
-        `,[data.user_id,data.product_id])
+        UPDATE product_reviews AS r
+        SET deleted_at = NOW()
+        WHERE r.user_id = $1 AND r.product_id = $2
+      `, [data.user_id, data.product_id]);
+      
       }
 }

@@ -6,7 +6,6 @@ import { CreateReviewPayload } from '@src/validators/reviews.validator';
 import logger from 'jet-logger';
 
 interface productReviews {
-    id:number,
     user_id : number,
     product_id : number,
     comments: string
@@ -20,7 +19,6 @@ export default class ReviewService extends BaseService{
       INSERT INTO product_reviews (user_id, product_id, comments, created_at, updated_at)
       VALUES ($1, $2, $3, NOW(), NOW())
       RETURNING
-        id as "id",
         user_id as "userId",
         product_id as "productId",
         comments as "comments",
@@ -50,7 +48,6 @@ export default class ReviewService extends BaseService{
         const whereClause = this.createWhereClause(where);
         const query = `
         SELECT 
-          r.id as "id",
           r.user_id as "userId",
           r.product_id as "productId",
           r.created_at as "createdAt",

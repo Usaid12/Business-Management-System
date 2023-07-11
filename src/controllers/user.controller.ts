@@ -1,4 +1,4 @@
-import { IRes, IReq } from "@src/routes/types/express/misc";
+import { IRes, IReq } from '@src/routes/types/express/misc';
 
 export async function getAll(req: IReq, res: IRes) {
   // const users = await UserService.getAll();

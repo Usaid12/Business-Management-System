@@ -5,11 +5,12 @@ import { Role } from './role.entity';
 import { Business } from './business.entity';
 import { ProductReviews } from './product_reviews.entity';
 import { Cart } from './cart.entity';
+import { Order } from './order.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
 	@Column({ name: 'first_name', type: 'varchar' })
-	public firstName: string;
+  public firstName: string;
 
 	@Column({ name: 'last_name', type: 'varchar' })
 	public lastName: string;
@@ -40,5 +41,9 @@ export class User extends BaseEntity {
 	public productReviews: Array<ProductReviews>;
 
 	@OneToMany(() => Cart, (cart) => cart.user)
-  public cartItems: Array<Cart>;
+	public cartItems: Array<Cart>;
+
+	@OneToMany(() => Order, (order) => order.user)
+	public orders: Array<Order>;
+
 }

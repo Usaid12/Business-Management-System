@@ -7,15 +7,18 @@ import CategorySerivce from '@src/services/category.service';
 import EnvVars from '@src/constants/EnvVars';
 import { getLocals } from '@src/util/locals';
 
-console.log(EnvVars.BackendDomain);
-
-export const createProduct = withTransaction(async (manager, req,  res) => {
+export const createProduct = withTransaction(async (manager, req, res) => {
   const payload = getLocals(res.locals, 'payload');
   const productSerivce = new ProductService(manager);
   const businessService = new BusinessService(manager);
   const categoryService = new CategorySerivce(manager);
 
-  const imageUrls = (req.files as Array<Express.Multer.File>).map((file) => `${EnvVars.BackendDomain}/products/${file.filename}`);
+  if (!req.files || Array.isArray(req.files)) {
+    throw new RouteError(HttpStatusCodes.INTERNAL_SERVER_ERROR, 'Some unexpected issue occured!!');
+  }
+  const imagePrefix = `${EnvVars.BackendDomain}/products`;
+  const imageUrls = req.files['images'].map((file) => `${imagePrefix}/${file.filename}`);
+  const thumbnail = `${imagePrefix}/${req.files['thumbnail'][0].filename}`;
   const data = req.body;
   data.price = parseInt(data.price);
   const childrens = await categoryService.findChildrens(parseInt(data.category_id));
@@ -26,7 +29,7 @@ export const createProduct = withTransaction(async (manager, req,  res) => {
   if (!business) {
     throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Please create a business first. Your account doesn\'t have a registered business');
   }
-  const product = await productSerivce.create({ ...data, business_id: business.id });
+  const product = await productSerivce.create({ ...data, business_id: business.id, thumbnail });
   const images = await productSerivce.addImages(imageUrls, product.id);
   return {
     data: {
@@ -60,10 +63,53 @@ export const getProductById = withTransaction(async (manager, req) => {
   if (isNaN(id)) {
     throw new RouteError(HttpStatusCodes.BAD_REQUEST, 'Invalid id');
   }
-  const product = await productService.findById(id);
+  const [product, images] = await Promise.all([
+    productService.findById(id),
+    productService.getImages(id),
+  ]);
   return {
-    data: product,
+    data: {
+      ...product,
+      images,
+    },
     message: `Product with id: ${id}`,
     statusCode: HttpStatusCodes.OK,
+  };
+});
+
+export const getProductImages = withTransaction(async (manager, req, res) => {
+  const productService = new ProductService(manager);
+  const productId = productService.validateId(req.params.id);
+  const images = await productService.getImages(productId);
+  return {
+    data: images,
+    message: '',
+    statusCode: HttpStatusCodes.OK,
+  }
+});
+
+export const addProductImages = withTransaction(async (manager, req, res) => {
+  const businessService = new BusinessService(manager);
+  const productService = new ProductService(manager);
+  const payload = getLocals(res.locals, 'payload');
+  const productId = productService.validateId(req.params.id);  
+  if (!req.files || !Array.isArray(req.files)) {
+    throw new RouteError(HttpStatusCodes.INTERNAL_SERVER_ERROR, 'Some unexpected issue occured!!');
+  }
+  const imagePrefix = `${EnvVars.BackendDomain}/products`;
+  const imageUrls = req.files.map((file) => `${imagePrefix}/${file.filename}`);
+  const business = await businessService.findByOwner(payload.userId);
+  if (!business) {
+    throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Please create a business first. Your account doesn\'t have a registered business');
+  }
+  const product = await productService.findOne({ id: productId, business_id: business.id });
+  if (!product) {
+    throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Product doesn\'t belong to your business');
+  }
+  const images = await productService.addImages(imageUrls, productId);
+  return {
+    data: images,
+    message: 'Product images added successfully',
+    statusCode: HttpStatusCodes.CREATED,
   };
 });

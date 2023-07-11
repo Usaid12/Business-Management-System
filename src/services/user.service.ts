@@ -40,6 +40,8 @@ export default class UserSerivce extends BaseService {
     if (user_found) {
       throw new RouteError(HttpStatusCodes.CONFLICT, 'User already exists');
     }
+
+
     const [user] = await this.db.query(`
       INSERT INTO users (first_name, last_name, gender, email, password, phone_number, role_id, created_at, updated_at)
       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) 

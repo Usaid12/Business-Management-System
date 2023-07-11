@@ -9,10 +9,10 @@ export class Cart extends BaseEntity {
   public userId: number;
 
   @Column({ name: 'product_id', nullable: false, type: 'integer' })
-  public product_id: number;
+  public productId: number;
 
-  @Column({ name: 'price', nullable: false, type: 'decimal' })
-  public price: number;
+  @Column({ name: 'quantity', nullable: false, type: 'integer' })
+  public quantity: number;
 
   @ManyToOne(() => Product, (product) => product.cartItems)
   @JoinColumn({ name: 'product_id',  foreignKeyConstraintName: 'cart_product_fk_id'  })

@@ -1,11 +1,12 @@
 import { BaseEntity } from '@src/util/BaseEntity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { Business } from './business.entity';
 import { Category } from './category.entity';
 import { ProductImages } from './product_images.entity';
 import { ProductReviews } from './product_reviews.entity';
 import { Cart } from './cart.entity';
 import { Order } from './order.entity';
+import { OrderItems } from './order_items.entity';
 
 @Entity({ name: 'products' })
 export class Product extends BaseEntity {
@@ -46,4 +47,7 @@ export class Product extends BaseEntity {
 
   @OneToMany(() => Order, (order) => order.product)
   public orders: Array<Order>;
+  @ManyToMany(() => OrderItems, (orderItems) => orderItems.productId)
+  @JoinColumn({ name: 'product_id', referencedColumnName: 'id', foreignKeyConstraintName: 'product_orderItem_fk' })
+  public orderItems: OrderItems;
 }

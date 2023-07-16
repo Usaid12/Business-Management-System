@@ -1,5 +1,5 @@
 import { BaseEntity } from '@src/util/BaseEntity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { Business } from './business.entity';
 import { Category } from './category.entity';
 import { ProductImages } from './product_images.entity';
@@ -7,8 +7,9 @@ import { ProductReviews } from './product_reviews.entity';
 import { Cart } from './cart.entity';
 import { Inventory } from './inventory.entity';
 import { OrderItem } from './order_items.entity';
+import { PRODUCT_TABLE } from '@src/constants/db';
 
-@Entity({ name: 'products' })
+@Entity({ name: PRODUCT_TABLE })
 export class Product extends BaseEntity {
   @Column({ name: 'name', type: 'varchar' })
   public name: string;

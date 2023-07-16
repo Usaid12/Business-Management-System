@@ -1,5 +1,5 @@
 import { BaseEntity } from '@src/util/BaseEntity';
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Business } from './business.entity';
 import { Category } from './category.entity';
 import { ProductImages } from './product_images.entity';

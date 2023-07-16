@@ -9,7 +9,6 @@ import { RouteError } from '@src/other/classes';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import logger from 'jet-logger';
 
-logger.info('Reached product service');
 
 interface CreateProductData extends CreateProductPayload {
   business_id: number;

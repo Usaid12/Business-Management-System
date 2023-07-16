@@ -3,6 +3,7 @@ import { BaseService } from './base.service';
 import { ProductReviews } from '@src/entities/product_reviews.entity';
 import { evaluateWhereClause } from '@src/util/evaluateWhereClause';
 import { CreateReviewPayload } from '@src/validators/reviews.validator';
+import ProductService from '@src/services/product.service';
 import logger from 'jet-logger';
 
 interface productReviews {
@@ -15,6 +16,7 @@ type reviewWhere = Partial <productReviews>;
 
 export default class ReviewService extends BaseService{
     public async writeReviews (data:productReviews){
+      
       const [reviewItem] = await this.db.query(`
       INSERT INTO product_reviews (user_id, product_id, comments, created_at, updated_at)
       VALUES ($1, $2, $3, NOW(), NOW())

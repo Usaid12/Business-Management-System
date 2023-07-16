@@ -1,9 +1,13 @@
 import { z } from 'zod';
 
 export const createReviews = z.object({
-    id: z.number(),
-    user_id: z.number(),
-    product_id: z.number(),
-    comments: z.string(),
+	product_id: z.number(),
+	comments: z.string(),
 });
+
+export const deleteReviews = z.object({
+	product_id: z.number(),
+});
+
 export type CreateReviewPayload = z.infer<typeof createReviews>;
+export type DeleteReviewPayload = z.infer<typeof deleteReviews>;

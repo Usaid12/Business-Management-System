@@ -6,28 +6,19 @@ import { validate } from '@src/middlewares/validate';
 import { auth } from '@src/middlewares/auth';
 
 router.post(
-    '/',
-    auth,
-    validate(ReviewValidator.createReviews),
-    ReviewController.addReviews
-  );
+	'/',
+	auth,
+	validate(ReviewValidator.createReviews),
+	ReviewController.addReviews,
+);
 
-
-router.get(
-    '/',
-    auth,
-    ReviewController.searchReviews,
-  );
-
-
-  
-
+router.get('/', auth, ReviewController.getReviews);
 
 router.delete(
-    '/',
-    auth,
-    validate(ReviewValidator.createReviews),
-    ReviewController.deleteReview
-  );
+	'/',
+	auth,
+	validate(ReviewValidator.deleteReviews),
+	ReviewController.deleteReview
+);
 
 export default router;

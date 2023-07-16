@@ -2,19 +2,17 @@ import { plainToInstance } from 'class-transformer';
 import { BaseService } from './base.service';
 import { ProductReviews } from '@src/entities/product_reviews.entity';
 import { evaluateWhereClause } from '@src/util/evaluateWhereClause';
-import { CreateReviewPayload } from '@src/validators/reviews.validator';
-import logger from 'jet-logger';
 
 interface Review {
-    user_id : number,
-    product_id : number,
-    comments: string
-} 
+	user_id: number,
+	product_id: number,
+	comments: string
+}
 
 type ReviewWhere = Partial<Review>;
 
-export default class ReviewService extends BaseService{
-  public async writeReviews (data: Review){
+export default class ReviewService extends BaseService {
+  public async writeReviews(data: Review) {
     const [reviewItem] = await this.db.query(`
       INSERT INTO product_reviews (user_id, product_id, comments, created_at, updated_at)
       VALUES ($1, $2, $3, NOW(), NOW())
@@ -27,14 +25,14 @@ export default class ReviewService extends BaseService{
     `, [data.user_id, data.product_id, data.comments]);
     return plainToInstance(ProductReviews, reviewItem);
   }
-  
+
   public async findReviews(where: ReviewWhere) {
     const query = this.makeSelectQuery(where);
-    const reviewItems: any[] = await this.db.query(query);
+    const reviewItems: unknown[] = await this.db.query(query);
     return plainToInstance(ProductReviews, reviewItems);
   }
 
-    
+
   private createWhereClause(where: ReviewWhere) {
     let whereClause = evaluateWhereClause(where, 'r');
     if (whereClause !== '') {
@@ -62,17 +60,16 @@ export default class ReviewService extends BaseService{
 
   public async findItem(where: ReviewWhere = {}) {
     const query = this.makeSelectQuery(where);
-    const reviewItems: any[] = await this.db.query(query);
+    const reviewItems: unknown[] = await this.db.query(query);
     if (reviewItems.length === 0) return null;
     return plainToInstance(ProductReviews, reviewItems[0]);
   }
 
-  public async deleteReview (data: Omit<Review, 'comments'>){
+  public async deleteReview(data: Omit<Review, 'comments'>) {
     await this.db.query(`
         UPDATE product_reviews AS r
         SET deleted_at = NOW()
         WHERE r.user_id = $1 AND r.product_id = $2
       `, [data.user_id, data.product_id]);
-      
   }
 }

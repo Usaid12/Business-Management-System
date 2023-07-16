@@ -45,7 +45,7 @@ export default class ProductService extends BaseService {
   }
 
   public async findAll(where: ProductWhere){
-    const data: Array<any> = await this.db.query(
+    const data: Array<unknown> = await this.db.query(
       `SELECT 
         p.id as "id",
         p.name as "name",
@@ -97,7 +97,7 @@ export default class ProductService extends BaseService {
 
   public async addImages(images: string[], product_id: number) {
     const values = images.map(image => `('${image}', ${product_id})`).join(', ');
-    const result: any[] = await this.db.query(`
+    const result: unknown[] = await this.db.query(`
       INSERT INTO product_images (image_url, product_id) VALUES ${values} 
       RETURNING 
         id, 
@@ -111,7 +111,7 @@ export default class ProductService extends BaseService {
   }
 
   public async getImages(productId: number) {
-    const result: any[] = await this.db.query(
+    const result: unknown[] = await this.db.query(
       ` SELECT 
           pi.id, 
           pi.image_url as "imageUrl", 

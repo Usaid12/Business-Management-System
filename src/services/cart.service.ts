@@ -29,7 +29,7 @@ export default class CartService extends BaseService {
 
   public async findItems(where: CartWhere) {
     const query = this.makeSelectQuery(where);
-    const cartItems: any[] = await this.db.query(query);
+    const cartItems: unknown[] = await this.db.query(query);
     return plainToInstance(Cart, cartItems);
   }
 
@@ -59,7 +59,7 @@ export default class CartService extends BaseService {
 
   public async findItem(where: CartWhere = {}) {
     const query = this.makeSelectQuery(where);
-    const cartItems: any[] = await this.db.query(query);
+    const cartItems: unknown[] = await this.db.query(query);
     if (cartItems.length === 0) return null;
     return plainToInstance(Cart, cartItems[0]);
   }

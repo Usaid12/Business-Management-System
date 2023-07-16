@@ -7,6 +7,7 @@ import BusinessRouter from './business.router';
 import CartRouter from './cart.router';
 import ReviewRouter from './review.router';
 import InventoryRouter from './inventory.router';
+import OrderRouter from './order.router';
 
 import cors from 'cors';
 
@@ -20,5 +21,6 @@ apiRouter.use('/business', BusinessRouter);
 apiRouter.use('/cart', CartRouter);
 apiRouter.use('/review', ReviewRouter);
 apiRouter.use('/inventory', InventoryRouter);
+apiRouter.use('/order', OrderRouter);
 
 export default apiRouter;

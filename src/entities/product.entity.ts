@@ -5,7 +5,6 @@ import { Category } from './category.entity';
 import { ProductImages } from './product_images.entity';
 import { ProductReviews } from './product_reviews.entity';
 import { Cart } from './cart.entity';
-import { Order } from './order.entity';
 import { Inventory } from './inventory.entity';
 import { OrderItem } from './order_items.entity';
 

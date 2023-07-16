@@ -1,10 +1,7 @@
-import { CreateInventoryPayload } from "@src/validators/inventory.validator";
-import { BaseService } from "./base.service";
-import { plainToInstance } from "class-transformer";
-import { Inventory } from "@src/entities/inventory.entity";
-
-
-
+import { CreateInventoryPayload } from '@src/validators/inventory.validator';
+import { BaseService } from './base.service';
+import { plainToInstance } from 'class-transformer';
+import { Inventory } from '@src/entities/inventory.entity';
 
 export default class InventoryService extends BaseService {
 
@@ -31,7 +28,7 @@ export default class InventoryService extends BaseService {
   }
 
   public async getProductInventory(productId: number) {
-    const result: any[] = await this.db.query(
+    const result: unknown[] = await this.db.query(
       `
         SELECT 
           i.id,

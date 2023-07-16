@@ -18,7 +18,7 @@ export const addReviews = withTransaction(async (manager, req, res) => {
   };
 });
 
-export const getReviews = withTransaction(async (manager, req, _res) => {
+export const getReviews = withTransaction(async (manager, req) => {
   const productId = req.query.product_id;
   if (!productId || typeof productId !== 'string') {
     throw new RouteError(HttpStatusCodes.BAD_REQUEST, 'product_id must be passed as a query param');

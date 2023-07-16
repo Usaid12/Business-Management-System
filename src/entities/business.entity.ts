@@ -1,5 +1,5 @@
 import { BaseEntity } from '@src/util/BaseEntity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './user.entity';
 import { Product } from './product.entity';
 import { BUSINESS_TABLE } from '@src/constants/db';

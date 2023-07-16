@@ -53,9 +53,8 @@ export const getBusinesses = withTransaction(async (manager, req, res) => {
   };
 });
 
-export const updateBusinesses = withTransaction(async (manager, req, res) => {
+export const updateBusinesses = withTransaction(async (manager, req) => {
   const id = parseInt(req.params.id, 10);
-  const data: any[] = [];
   const businessService = new BusinessService(manager);
   const updateBusinesses = await businessService.update(id);
   return {

@@ -67,7 +67,7 @@ export default class CategorySerivce extends BaseService {
 
   public async findAll(where?: Partial<GetCategoryWhere>): Promise<Array<Category>>{
     const query = this.makeSelectCategoryQuery(where);
-    const result: Array<any> = await this.db.query(query);
+    const result: Array<unknown> = await this.db.query(query);
     return plainToInstance(Category, result);
   }
 

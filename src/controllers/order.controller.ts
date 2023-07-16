@@ -2,9 +2,7 @@ import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import { withTransaction } from '@src/util/withTransaction';
 
 export const createOrder = withTransaction(async (manager, req, res) => {
-
-  await Promise.resolve();
-
+  await Promise.resolve({ manager, req, res });
   return {
     data: {},
     message: 'Order has been placed successfully',

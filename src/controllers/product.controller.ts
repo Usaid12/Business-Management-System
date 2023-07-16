@@ -77,15 +77,15 @@ export const getProductById = withTransaction(async (manager, req) => {
   };
 });
 
-export const getProductImages = withTransaction(async (manager, req, res) => {
+export const getProductImages = withTransaction(async (manager, req) => {
   const productService = new ProductService(manager);
   const productId = productService.validateId(req.params.id);
   const images = await productService.getImages(productId);
   return {
     data: images,
-    message: '',
+    message: 'These are the product images',
     statusCode: HttpStatusCodes.OK,
-  }
+  };
 });
 
 export const addProductImages = withTransaction(async (manager, req, res) => {

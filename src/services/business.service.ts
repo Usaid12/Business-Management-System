@@ -92,7 +92,7 @@ public async findByOwner(owner_id: number): Promise<Business | null> {
   }
 
   public async findAll(where?: Partial<GetBusinessWhere>): Promise<Array<Business>>{
-    const data: any[] = await this.db.query(this.makeSelectBusinessQuery(where));
+    const data: unknown[] = await this.db.query(this.makeSelectBusinessQuery(where));
     return plainToInstance(Business, data);
   }
   

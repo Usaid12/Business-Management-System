@@ -20,9 +20,14 @@ router.get(
   );
 
 
+  
+
+
 router.delete(
     '/',
     auth,
     validate(ReviewValidator.createReviews),
     ReviewController.deleteReview
   );
+
+export default router;

@@ -6,6 +6,7 @@ import ReviewService from '@src/services/reviews.service';
 import { withTransaction } from '@src/util/withTransaction';
 import { CreateReviewPayload } from '@src/validators/reviews.validator';
 import { request } from 'express';
+import logger from 'jet-logger';
 
 export const addReviews = withTransaction(async (manager, req, res) => {
     const data = req.body as CreateReviewPayload;

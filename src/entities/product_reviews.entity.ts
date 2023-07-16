@@ -12,7 +12,7 @@ export class ProductReviews extends BaseEntity {
   public userId: number;
 
   @Column({ name: 'comments', nullable: false, type: 'text' })
-  public imageUrl: string;
+  public comments: string;
 
   @ManyToOne(() => Product, (product) => product.reviews)
   @JoinColumn({ name: 'product_id',  foreignKeyConstraintName: 'product_review_fk_id'  })

@@ -12,8 +12,7 @@ export class Order extends BaseEntity {
   @Column({ name: 'product_id', type: 'integer', nullable: false })
   public productId: number;
 
-  @Column({ name: 'quantity', type: 'integer', nullable: false })
-  public quantity: number;
+
 
   @Column({ name: 'total_price', type: 'integer', nullable: false })
   public total: number;

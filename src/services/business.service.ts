@@ -41,7 +41,7 @@ export default class BusinessService extends BaseService {
   } 
 
 
-  public async findByOwner(owner_id: number): Promise<Business | null> {
+public async findByOwner(owner_id: number): Promise<Business | null> {
     const result = await this.db.query(`
       SELECT 
         b.id as id,

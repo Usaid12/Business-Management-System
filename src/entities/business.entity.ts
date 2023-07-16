@@ -2,8 +2,9 @@ import { BaseEntity } from '@src/util/BaseEntity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { User } from './user.entity';
 import { Product } from './product.entity';
+import { BUSINESS_TABLE } from '@src/constants/db';
 
-@Entity({ name: 'businesses' })
+@Entity({ name: BUSINESS_TABLE })
 export class Business extends BaseEntity {
 	@Column({ name: 'name', type: 'varchar' })
   public name: string;

@@ -1,10 +1,11 @@
 import { BaseEntity } from '@src/util/BaseEntity';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { Order } from './order.entity';
+import { SHIPPING_DETAIL_TABLE } from '@src/constants/db';
 
 
 
-@Entity({ name: 'shipping_details' })
+@Entity({ name: SHIPPING_DETAIL_TABLE })
 export class ShippingDetails extends BaseEntity {
   @Column({ name: 'carrier', type: 'varchar', nullable: false  })
   public carrier: string;

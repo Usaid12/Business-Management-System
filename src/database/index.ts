@@ -1,6 +1,6 @@
+import 'reflect-metadata';
 import EnvVars from '../constants/EnvVars';
 import path from 'path';
-import '../pre-start';
 import { DataSource } from 'typeorm';
 
 const db = new DataSource({
@@ -10,10 +10,10 @@ const db = new DataSource({
   username: EnvVars.Database.User,
   password: EnvVars.Database.Password,
   port: EnvVars.Database.Port,
-  synchronize: true,
+  synchronize: false,
   logging: true,
   entities: [path.resolve(__dirname, '../entities/*.entity{.ts,.js}')],
-  migrations: [path.resolve(__dirname, '../migrations')],
+  migrations: [path.resolve(__dirname, '../migrations/*.{ts,js}')],
   logger: 'debug',
   subscribers: [],
 });

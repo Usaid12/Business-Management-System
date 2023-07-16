@@ -92,7 +92,7 @@ export const addProductImages = withTransaction(async (manager, req, res) => {
   const businessService = new BusinessService(manager);
   const productService = new ProductService(manager);
   const payload = getLocals(res.locals, 'payload');
-  const productId = productService.validateId(req.params.id);  
+  const productId = productService.validateId(req.params.id);
   if (!req.files || !Array.isArray(req.files)) {
     throw new RouteError(HttpStatusCodes.INTERNAL_SERVER_ERROR, 'Some unexpected issue occured!!');
   }

@@ -2,8 +2,9 @@ import { BaseEntity } from '@src/util/BaseEntity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Product } from './product.entity';
 import { User } from './user.entity';
+import { PRODUCT_REVIEW_TABLE } from '@src/constants/db';
 
-@Entity({ name: 'product_reviews' })
+@Entity({ name: PRODUCT_REVIEW_TABLE })
 export class ProductReviews extends BaseEntity {
   @Column({ name: 'product_id', nullable: false, type: 'integer' })
   public productId: number;

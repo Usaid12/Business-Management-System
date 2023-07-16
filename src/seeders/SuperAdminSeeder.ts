@@ -9,43 +9,56 @@ export default class SuperAdminSeeder {
     const query_runner = dataSource.createQueryRunner();
     try {
       await query_runner.startTransaction();
-      const checkSuperAdmin = await query_runner.manager.query(`SELECT 
-      u.id as "id",
-      u.first_name as "firstName",
-      u.last_name as "lastName",
-      u.gender, 
-      u.email, 
-      u.phone_number as "phoneNumber", 
-      u.role_id as "roleId", 
-      u.password as password,
-      u.created_at as "createdAt", 
-      u.updated_at as "updatedAt", 
-      u.deleted_at as "deletedAt",
-      r.name as "role"
-    FROM users u
-    INNER JOIN roles r ON r.id = u.role_id
-    WHERE r.name = $1;`, [Roles.BUSINESS_ADMIN]);
-      if (checkSuperAdmin.length > 0) throw new Error('Super admin already exists');
+      const checkSuperAdmin = await query_runner.manager.query(
+        `SELECT 
+          u.id as "id",
+          u.first_name as "firstName",
+          u.last_name as "lastName",
+          u.gender, 
+          u.email, 
+          u.phone_number as "phoneNumber", 
+          u.role_id as "roleId", 
+          u.password as password,
+          u.created_at as "createdAt", 
+          u.updated_at as "updatedAt", 
+          u.deleted_at as "deletedAt",
+          r.name as "role"
+        FROM users u
+        INNER JOIN roles r ON r.id = u.role_id
+        WHERE r.name = $1;`,
+        [Roles.SUPER_ADMIN]);
+
+      if (checkSuperAdmin.length > 0) {
+        throw new Error('Super admin already exists');
+      }
+
+      const hashedPassword = await hash(EnvVars.SuperAdmin.Password?.toString() ?? '', 10);
+      
       await query_runner.manager.query(
-        `INSERT INTO users (first_name, last_name, gender, email, password, phone_number, role_id, created_at, updated_at)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) 
-             RETURNING 
-               id, 
-               first_name as "firstName", 
-               last_name as "lastName", 
-               gender, 
-               email, 
-               phone_number as "phoneNumber", 
-               role_id as "roleId", 
-               created_at as "createdAt", 
-               updated_at as "updatedAt", 
-               deleted_at as "deletedAt";
-            `,
-        [EnvVars.SuperAdmin.FirstName, EnvVars.SuperAdmin.LastName, 
-          EnvVars.SuperAdmin.Gender?.toLowerCase(), EnvVars.SuperAdmin.Email, await hash(EnvVars.SuperAdmin.Password?.toString() ?? '' ,10), 
-          EnvVars.SuperAdmin.ContactNo, EnvVars.SuperAdmin.RoleId],
+        `
+        INSERT INTO users (first_name, last_name, gender, email, password, phone_number, role_id, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) 
+        RETURNING 
+          id, 
+          first_name as "firstName", 
+          last_name as "lastName", 
+          gender, 
+          email, 
+          phone_number as "phoneNumber", 
+          role_id as "roleId", 
+          created_at as "createdAt", 
+          updated_at as "updatedAt", 
+          deleted_at as "deletedAt";`,
+        [
+          EnvVars.SuperAdmin.FirstName,
+          EnvVars.SuperAdmin.LastName,
+          EnvVars.SuperAdmin.Gender?.toLowerCase(),
+          EnvVars.SuperAdmin.Email,
+          hashedPassword,
+          EnvVars.SuperAdmin.ContactNo,
+          EnvVars.SuperAdmin.RoleId,
+        ],
       );
-      // Print the created super admin user for testing
       await query_runner.commitTransaction();
     } catch (error) {
       await query_runner.rollbackTransaction();

@@ -2,8 +2,9 @@ import { BaseEntity } from '@src/util/BaseEntity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Product } from './product.entity';
 import { User } from './user.entity';
+import { CART_TABLE } from '@src/constants/db';
 
-@Entity({ name: 'carts' })
+@Entity({ name: CART_TABLE })
 export class Cart extends BaseEntity {
   @Column({ name: 'user_id', nullable: false, type: 'integer' })
   public userId: number;

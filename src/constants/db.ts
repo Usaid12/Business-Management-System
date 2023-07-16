@@ -1,0 +1,12 @@
+export const USER_TABLE = 'users';
+export const ROLE_TABLE = 'roles';
+export const PRODUCT_TABLE = 'products';
+export const CATEGORY_TABLE = 'categories';
+export const BUSINESS_TABLE = 'businesses';
+export const CART_TABLE = 'carts';
+export const ORDER_TABLE = 'orders';
+export const ORDER_ITEM_TABLE = 'order_items';
+export const PRODUCT_REVIEW_TABLE = 'product_reviews';
+export const PRODUCT_IMAGE_TABLE = 'product_images';
+export const INVENTORY_TABLE = 'inventory';
+export const SHIPPING_DETAIL_TABLE = 'shipping_details';

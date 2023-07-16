@@ -7,9 +7,6 @@ import { evaluateWhereClause } from '@src/util/evaluateWhereClause';
 import { ProductImages } from '@src/entities/product_images.entity';
 import { RouteError } from '@src/other/classes';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import logger from 'jet-logger';
-
-logger.info('Reached product service');
 
 interface CreateProductData extends CreateProductPayload {
   business_id: number;
@@ -133,4 +130,5 @@ export default class ProductService extends BaseService {
     if (isNaN(productId)) throw new RouteError(HttpStatusCodes.BAD_REQUEST, 'productId can only be an integer');
     return productId;
   }
+
 }

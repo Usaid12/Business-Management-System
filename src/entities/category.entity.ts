@@ -1,13 +1,14 @@
 import { BaseEntity } from '@src/util/BaseEntity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Product } from './product.entity';
+import { CATEGORY_TABLE } from '@src/constants/db';
 
-@Entity({ name: 'categories' })
+@Entity({ name: CATEGORY_TABLE })
 export class Category extends BaseEntity {
   @Column({ name: 'name', type: 'varchar', unique: true })
   public name: string;
 
-  @Column({ name: 'parent_id', type: 'int8', nullable: true })
+  @Column({ name: 'parent_id', type: 'integer', nullable: true })
   public parentId: number;
 
   @ManyToOne(() => Category, category => category.children)

@@ -6,8 +6,9 @@ import { Business } from './business.entity';
 import { ProductReviews } from './product_reviews.entity';
 import { Cart } from './cart.entity';
 import { Order } from './order.entity';
+import { USER_TABLE } from '@src/constants/db';
 
-@Entity({ name: 'users' })
+@Entity({ name: USER_TABLE })
 export class User extends BaseEntity {
 	@Column({ name: 'first_name', type: 'varchar' })
   public firstName: string;

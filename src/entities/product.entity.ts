@@ -6,6 +6,8 @@ import { ProductImages } from './product_images.entity';
 import { ProductReviews } from './product_reviews.entity';
 import { Cart } from './cart.entity';
 import { Order } from './order.entity';
+import { Inventory } from './inventory.entity';
+import { OrderItem } from './order_items.entity';
 
 @Entity({ name: 'products' })
 export class Product extends BaseEntity {
@@ -39,11 +41,14 @@ export class Product extends BaseEntity {
   public images: Array<ProductImages>;
 
   @OneToMany(() => ProductReviews, (productReviews) => productReviews.product)
-  public reviews: Array<ProductImages>;
+  public reviews: Array<ProductReviews>;
+
+  @OneToMany(() => Inventory, (inventory) => inventory.product)
+  public inventory: Array<Inventory>;
 
   @OneToMany(() => Cart, (cart) => cart.product)
   public cartItems: Array<Cart>;
 
-  @OneToMany(() => Order, (order) => order.product)
-  public orders: Array<Order>;
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
+  public orderItems: Array<OrderItem>;
 }

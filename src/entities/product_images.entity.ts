@@ -1,8 +1,9 @@
 import { BaseEntity } from '@src/util/BaseEntity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Product } from './product.entity';
+import { PRODUCT_IMAGE_TABLE } from '@src/constants/db';
 
-@Entity({ name: 'product_images' })
+@Entity({ name: PRODUCT_IMAGE_TABLE })
 export class ProductImages extends BaseEntity {
   @Column({ name: 'product_id', nullable: false, type: 'integer' })
   public productId: number;

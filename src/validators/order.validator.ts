@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const createOrder = z.object({
   cart_ids: z.array(z.number()),
   carrier: z.string(),
-  address: z.number(),
+  address: z.string(),
   city: z.string(),
   country: z.string(),
   state: z.string(),

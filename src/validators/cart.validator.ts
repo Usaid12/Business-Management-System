@@ -7,3 +7,7 @@ const cartItemPayload = z.object({
 export const addToCart = cartItemPayload;
 
 export const removeFromCart = cartItemPayload;
+
+export const updateItem = cartItemPayload.extend({
+  quantity: z.number(),
+});

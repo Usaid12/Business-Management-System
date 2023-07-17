@@ -20,6 +20,9 @@ export class Product extends BaseEntity {
   @Column({ name: 'price', type: 'integer' })
   public price: number;
 
+  @Column({ name: 'quantity', type: 'integer', default: 0 })
+  public quantity: number;
+
   @Column({ name: 'thumbnail', type: 'text' })
   public thumbnail: string;
 

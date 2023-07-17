@@ -16,4 +16,6 @@ router.post(
   OrderController.createOrder,
 );
 
+router.get('/', auth, hasRole(Roles.CUSTOMER), OrderController.getOrderHisotry);
+
 export default router;

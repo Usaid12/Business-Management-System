@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const createInventory = z.object({
   product_id: z.number(),

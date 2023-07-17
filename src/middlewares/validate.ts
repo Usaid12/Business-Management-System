@@ -12,8 +12,8 @@ export const validate = <Payload = any, Def extends ZodTypeDef = ZodTypeDef>(sch
       next();
     } catch (error) {
       return res.status(HttpStatusCodes.BAD_REQUEST).json({
-        message: 'Validation Error',
-        error: error as z.ZodError,
+        message: (error as z.ZodError).issues[0].message,
+        error: 'Validation Error',
         statusCode: HttpStatusCodes.BAD_REQUEST,
       });
     }

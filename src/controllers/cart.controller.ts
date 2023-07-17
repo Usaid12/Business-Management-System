@@ -1,6 +1,5 @@
 /* eslint-disable no-async-promise-executor */
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
-import { Cart } from '@src/entities/cart.entity';
 import { Product } from '@src/entities/product.entity';
 import { RouteError } from '@src/other/classes';
 import CartService from '@src/services/cart.service';
@@ -24,7 +23,7 @@ export const addToCart = withTransaction(async (db, req, res) => {
   if (!cartItem) {
     cartItem = await cartService.addItem(cartItemWhere);
   } else { 
-    cartItem = await cartService.updateItemQuantity(cartItemWhere);
+    cartItem = await cartService.updateItemQuantity(cartItemWhere, cartItem.quantity + 1);
   }
   return {
     data: {
@@ -124,3 +123,36 @@ export const getCartItemsCount = withTransaction(async (db, _req, res) => {
     statusCode: HttpStatusCodes.OK,
   };
 });
+
+export const updateItem = withTransaction(async (db, req, res) => {
+  const cartService = new CartService(db);
+  const productService = new ProductService(db);
+  const user = getLocals(res.locals, 'user');
+  const product = await productService.findById(req.body.productId);
+  if (!product) {
+    throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Product doesnt exists');
+  }
+  const cartItemWhere = {
+    user_id: user.id,
+    product_id: product.id,
+  };
+  let cartItem = await cartService.findItem(cartItemWhere);
+  if (!cartItem) {
+    throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Product doesn\'t exists in your cart');
+  }  
+  cartItem = await cartService.updateItemQuantity(cartItemWhere, req.body.quantity);
+  return {
+    data: {
+      id: cartItem.id,
+      quantity: cartItem.quantity,
+      price: product.price,
+      subTotal: product.price * cartItem.quantity,
+      createdAt: cartItem.createdAt,
+      updatedAt: cartItem.updatedAt,
+      deletedAt: cartItem.deletedAt,
+      product,
+    },
+    message: 'Quantity of item has been updated successfully',
+    statusCode: HttpStatusCodes.OK,
+  };
+})

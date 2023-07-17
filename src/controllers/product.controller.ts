@@ -1,4 +1,4 @@
-import ProductService from '@src/services/product.service';
+import ProductService, { ProductWhere } from '@src/services/product.service';
 import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import { withTransaction } from '@src/util/withTransaction';
 import BusinessService from '@src/services/business.service';
@@ -6,6 +6,7 @@ import { RouteError } from '@src/other/classes';
 import CategorySerivce from '@src/services/category.service';
 import EnvVars from '@src/constants/EnvVars';
 import { getLocals } from '@src/util/locals';
+import { Roles } from '@src/constants/roles';
 
 export const createProduct = withTransaction(async (manager, req, res) => {
   const payload = getLocals(res.locals, 'payload');
@@ -45,11 +46,15 @@ export const getProducts = withTransaction(async (manager, req, res) => {
   const payload = getLocals(res.locals, 'payload');
   const productSerivce = new ProductService(manager);
   const businessService = new BusinessService(manager);
-  const business = await businessService.findByOwner(payload.userId);
-  if (!business) {
-    throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Please create a business first. Your account doesn\'t have a registered business');
+  const where: ProductWhere = {};
+  if (payload.role === Roles.BUSINESS_ADMIN) {
+    const business = await businessService.findByOwner(payload.userId);
+    if (!business) {
+      throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Please create a business first. Your account doesn\'t have a registered business');
+    }
+    where.business_id = business.id;
   }
-  const products = await productSerivce.findAll({ business_id: business.id });
+  const products = await productSerivce.findAll(where);
   return {
     data: products,
     message: 'Produts List',

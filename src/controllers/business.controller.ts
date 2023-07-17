@@ -12,6 +12,7 @@ import { RouteError } from '@src/other/classes';
 export const createBusiness = withTransaction(async (manager, req) => {
   const data = req.body as CreateBusinessPayload;
   const password = generatePassword(8);
+  console.log(password);
   const userSerivce = new UserSerivce(manager);
   const businessService = new BusinessService(manager);
   const user = await userSerivce.create({ ...data.user, password, role: Roles.BUSINESS_ADMIN });

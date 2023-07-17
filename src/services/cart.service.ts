@@ -72,22 +72,28 @@ export default class CartService extends BaseService {
     c.id,
     c.user_id as "userId",
     c.product_id as "productId",
+    p.price as "price",
     c.quantity as "quantity",
     c.created_at as "createdAt",
     c.updated_at as "updatedAt",
     c.deleted_at as "deletedAt"
   FROM carts c
-  WHERE c.id IN ($1) AND c.user_id = $2
-    `, [cartIds, userId]);
-    const carts = plainToInstance(Cart, cartsData);
-    if (carts.length !== cartIds.length) {
+  INNER JOIN products p ON p.id = c.product_id
+  WHERE c.id IN (${cartIds.map(id => `'${id}'`).join(', ')}) AND c.user_id = $1
+    `, [userId]);
+    if (cartsData.length !== cartIds.length) {
       throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Invalid cartIds');
     }
-    return carts;
+    return cartsData.map(data => {
+      return {
+        ...plainToInstance(Cart, data),
+        price: (data as any).price as number,
+      };
+    });
   }
 
-  public async deleteItem(where: Omit<CartItem, 'price'>) {
-    const whereClause = evaluateWhereClause(where, 'c');
+  public async deleteItem(where: Partial<Omit<CartItem, 'price'> & { id: number }>) {
+    const whereClause = evaluateWhereClause(where);
     await this.db.query(`
       UPDATE carts SET deleted_at = NOW()
       WHERE ${whereClause};
@@ -104,11 +110,11 @@ export default class CartService extends BaseService {
     else return parseInt(result[0].cartItemsCount || '0', 10);
   }
 
-  public async updateItemQuantity(where: CartWhere, quantityStep = 1) {
+  public async updateItemQuantity(where: CartWhere, quantity: number) {
     const whereClause = this.createWhereClause(where);
     await this.db.query(`
       UPDATE carts c
-      SET quantity = quantity + ${quantityStep} 
+      SET quantity = ${quantity} 
       WHERE ${whereClause};
     `);
     const item = await this.findItem(where);

@@ -10,7 +10,7 @@ const db = new DataSource({
   username: EnvVars.Database.User,
   password: EnvVars.Database.Password,
   port: EnvVars.Database.Port,
-  synchronize: false,
+  synchronize: true,
   logging: true,
   entities: [path.resolve(__dirname, '../entities/*.entity{.ts,.js}')],
   migrations: [path.resolve(__dirname, '../migrations/*.{ts,js}')],

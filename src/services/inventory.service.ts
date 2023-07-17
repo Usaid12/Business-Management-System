@@ -14,7 +14,7 @@ export default class InventoryService extends BaseService {
           ($1, $2, $3, $4, NOW(), NOW())
         RETURNING 
           id,
-          product_id as "productId"
+          product_id as "productId",
           price_per_unit as "pricePerUnit",
           arrived_at as "arrivedAt",
           quantity as "quantity",
@@ -24,6 +24,14 @@ export default class InventoryService extends BaseService {
       `,
       [data.product_id, data.price_per_unit, data.arrivedAt, data.quantity],
     );
+
+    await this.db.query(`
+      UPDATE products 
+      SET quantity = quantity + $2 
+      WHERE id = $1;`,
+      [data.product_id, data.quantity],
+    );
+
     return plainToInstance(Inventory, result[0]);
   }
 

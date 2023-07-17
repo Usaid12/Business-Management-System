@@ -8,8 +8,6 @@ export class ShippingDetails extends BaseEntity {
   @Column({ name: 'carrier', type: 'varchar', nullable: false })
   public carrier: string;
 
-
-
   @Column({ name: 'address', type: 'varchar', nullable: false })
   public address: string;
 

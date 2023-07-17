@@ -17,11 +17,8 @@ export class Order extends BaseEntity {
   @Column({ name: 'user_id', type: 'integer', nullable: false })
   public userId: number;
 
-  @Column({ name: 'quantity', type: 'integer', nullable: false })
-  public quantity: number;
-
   @Column({ name: 'total_price', type: 'integer', nullable: false })
-  public total: number;
+  public totalPrice: number;
 
   @Column({ name: 'status', type: 'varchar', nullable: false })
   public status: string;

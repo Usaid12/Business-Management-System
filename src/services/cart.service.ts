@@ -2,6 +2,8 @@ import { plainToInstance } from 'class-transformer';
 import { BaseService } from './base.service';
 import { Cart } from '@src/entities/cart.entity';
 import { evaluateWhereClause } from '@src/util/evaluateWhereClause';
+import { RouteError } from '@src/other/classes';
+import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 
 interface CartItem {
   user_id: number;
@@ -62,6 +64,26 @@ export default class CartService extends BaseService {
     const cartItems: unknown[] = await this.db.query(query);
     if (cartItems.length === 0) return null;
     return plainToInstance(Cart, cartItems[0]);
+  }
+
+  public async validateCartIds(cartIds: number[], userId: number) {
+    const cartsData: unknown[] = await this.db.query(`
+    SELECT 
+    c.id,
+    c.user_id as "userId",
+    c.product_id as "productId",
+    c.quantity as "quantity",
+    c.created_at as "createdAt",
+    c.updated_at as "updatedAt",
+    c.deleted_at as "deletedAt"
+  FROM carts c
+  WHERE c.id IN ($1) AND c.user_id = $2
+    `, [cartIds, userId]);
+    const carts = plainToInstance(Cart, cartsData);
+    if (carts.length !== cartIds.length) {
+      throw new RouteError(HttpStatusCodes.NOT_FOUND, 'Invalid cartIds');
+    }
+    return carts;
   }
 
   public async deleteItem(where: Omit<CartItem, 'price'>) {

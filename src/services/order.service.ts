@@ -101,6 +101,7 @@ export default class OrderService extends BaseService {
     return await this.db.query(
       `
         SELECT 
+          oi.id as "id",
           p.name as "name",
           oi.quantity as "quantity",
           o.status as "status",

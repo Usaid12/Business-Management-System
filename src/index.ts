@@ -3,7 +3,7 @@ import logger from 'jet-logger';
 import EnvVars from './constants/EnvVars';
 import server from './server';
 import db from './database';
-import { SuperAdminSeeder } from './seeders';
+import './seeders/index';
 
 
 async function bootstrap() {
@@ -13,8 +13,6 @@ async function bootstrap() {
     await db.initialize();
     logger.info('Database has been initialized');
   }
-
-  await Promise.all([SuperAdminSeeder.run(db)]);
   server.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));
 }
 

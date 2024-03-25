@@ -1,7 +1,6 @@
 /**
  * Setup express server.
  */
-import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import path, { resolve } from 'path';
 import express, { Request, Response, NextFunction } from 'express';
@@ -29,7 +28,7 @@ const app = express();
 
 // Basic middleware
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(resolve(__dirname, './public')));
 
 // Show routes called in console during development

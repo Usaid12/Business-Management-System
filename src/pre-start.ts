@@ -8,7 +8,8 @@
 import path from 'path';
 import dotenv from 'dotenv';
 import { parse } from 'ts-command-line-args';
-
+import fs from 'fs';
+import logger from 'jet-logger';
 
 // **** Types **** //
 
@@ -28,11 +29,29 @@ const args = parse<IArgs>({
   },
 });
 
-// Set the env file
-const result2 = dotenv.config({
-  path: path.join(__dirname, `../env/${args.env}.env`),
+let envFiles = args.env === 'development' ? ['.env', '.env.local', '.env.development'] : [`.env.${args.env}`];
+envFiles = envFiles.map((fileName) => {
+  return path.resolve(process.cwd(), fileName);
 });
 
-if (result2.error) {
-  throw result2.error;
+// check if the env file exists
+const envFile = envFiles.find((file) => {
+  return fs.existsSync(file);
+});
+
+if (!envFile) {
+  const error = new Error(`No env file found for environment: ${args.env}`);
+  logger.err(error);
+  throw error;
+}
+
+// Set the env file
+const result = dotenv.config({
+  path: envFile,
+});
+
+if (result.error) {
+  const { error } = result;
+  logger.err(error);
+  throw error;
 }

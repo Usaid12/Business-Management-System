@@ -32,6 +32,7 @@ export default {
     User: process.env.DB_USER,
     Password: process.env.DB_PASSWORD,
     Name: process.env.DB_NAME,
+    IsSeed: process.env.DB_SEED === 'true',
   },
   SuperAdmin: {
     FirstName: process.env.SUPER_ADMIN_FIRST_NAME?.toString(),
